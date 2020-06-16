@@ -1,0 +1,8 @@
+# Created by .ignore support plugin (hsz.mobi)
+.gitignore
+.idea/.gitignore
+.idea/desire.iml
+.idea/inspectionProfiles/
+.idea/misc.xml
+.idea/modules.xml
+venv/
