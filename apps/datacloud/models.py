@@ -1,3 +1,151 @@
 from django.db import models
 
+
 # Create your models here.
+
+
+class ChannelInfo(models.Model):
+    """
+    数据源信息表
+    """
+    sys_name = models.CharField(verbose_name='源系统英文简称', max_length=50)
+    chn_name = models.CharField(verbose_name='中文名称', max_length=128)
+    db_name = models.CharField(verbose_name='数据库名', max_length=128)
+    address = models.GenericIPAddressField(verbose_name='IP地址')
+    port = models.CharField(verbose_name='端口', max_length=20)
+    code_page = models.CharField(verbose_name='字符集', max_length=10)
+    username = models.CharField(verbose_name='用户名', max_length=50)
+    password = models.CharField(verbose_name='密码', max_length=50)
+    sync_flag = models.BooleanField(verbose_name='同步标识', default=False)
+    created_time = models.DateTimeField(auto_now_add=True, verbose_name='创建时间')
+    updated_time = models.DateTimeField(auto_now=True, verbose_name='上次修改时间')
+
+    def __str__(self):
+        return self.db_name
+
+    class Meta:
+        verbose_name = '数据源配置'
+        verbose_name_plural = verbose_name
+
+
+class ChkInfo(models.Model):
+    """
+    条件检测表
+    """
+
+    DATE_TYPE_01 = 'T+0'
+    DATE_TYPE_02 = 'T+1'
+    DATE_TYPE_03 = 'T+2'
+    DATE_TYPE_ITEMS = (
+        (DATE_TYPE_01, 'T+0'),
+        (DATE_TYPE_02, 'T+1'),
+        (DATE_TYPE_03, 'T+2'),
+    )
+
+    db_name = models.ForeignKey(ChannelInfo, on_delete=models.DO_NOTHING, verbose_name='源系统库名')
+    chk_id = models.IntegerField(verbose_name='检测条件编号')
+    chk_flag = models.CharField(verbose_name='检测条件', max_length=256)
+    chk_name = models.CharField(verbose_name='检测名称', max_length=128)
+    date_type = models.CharField(verbose_name='数据日期', choices=DATE_TYPE_ITEMS, max_length=4,
+                                 default=DATE_TYPE_02)
+    val_flag = models.CharField(verbose_name='检测有效标识', max_length=128)
+    memo = models.CharField(verbose_name='备注', max_length=128)
+    sync_flag = models.BooleanField(verbose_name='同步标识', default=False)
+    created_time = models.DateTimeField(auto_now_add=True, verbose_name='创建时间')
+    updated_time = models.DateTimeField(auto_now=True, verbose_name='上次修改时间')
+
+    def __str__(self):
+        return self.db_name
+
+    class Meta:
+        verbose_name = '检测条件配置'
+        verbose_name_plural = verbose_name
+
+
+class SyncTaskInfo(models.Model):
+    """
+    数据同步任务信息表
+    """
+
+    # 定义数据卸载格式参数
+    EXPORT = 'export'
+    HPU = 'hpu'
+    FTP = 'ftp'
+    CDC = 'cdc'
+    EXP_METHOD_ITEMS = (
+        (EXPORT, 'export'),
+        (HPU, 'hpu'),
+        (FTP, 'ftp'),
+        (CDC, 'cdc'),
+    )
+
+    LOAD_METHOD_ITEMS = (
+        ('insert', 'insert'),
+        ('insert_update', 'insert_update'),
+        ('replace', 'replace'),
+        ('delete_insert', 'delete_insert'),
+    )
+
+    DATE_TYPE_01 = 'T+0'
+    DATE_TYPE_02 = 'T+1'
+    DATE_TYPE_03 = 'T+2'
+    DATE_TYPE_ITEMS = (
+        (DATE_TYPE_01, 'T+0'),
+        (DATE_TYPE_02, 'T+1'),
+        (DATE_TYPE_03, 'T+2'),
+    )
+
+    db_name = models.ForeignKey(ChannelInfo, on_delete=models.DO_NOTHING, verbose_name='源系统库名')
+    tab_name = models.CharField(verbose_name='表名', max_length=128)
+    exp_method = models.CharField(verbose_name='导出方式', choices=EXP_METHOD_ITEMS,
+                                  max_length=10, default=EXPORT)
+    zl_info = models.CharField(verbose_name='增量标识', choices=(('Z', '增量'), ('Q', '全量')), max_length=1)
+    zl_col = models.CharField(verbose_name='增量同步检测字段', max_length=50, null=True, blank=True)
+    ftp_file = models.CharField(verbose_name='FTP同步条件', max_length=256, null=True, blank=True)
+    date_type = models.CharField(verbose_name='数据日期', choices=DATE_TYPE_ITEMS, max_length=4,
+                                 default=DATE_TYPE_02)
+    out_path = models.CharField(verbose_name='数据导出目录', max_length=128, null=True, blank=True)
+    outfile_type = models.CharField(verbose_name='数据导出格式', max_length=3,
+                                    choices=(('ixf', 'IXF'), ('del', 'DEL')))
+    load_method = models.CharField(verbose_name='加载方式', max_length=20, choices=LOAD_METHOD_ITEMS)
+    load_tab_tmp = models.CharField(verbose_name='入库增量表名', max_length=128, null=True, blank=True)
+    load_tab_mir = models.CharField(verbose_name='入库全量表名', max_length=128, null=True, blank=True)
+    month_flag = models.BooleanField(verbose_name='是否仅保留当月数据', default=False,
+                                     help_text='值为真时仅保留当月数据，每月2号自动清理；值为否时一直保留')
+    his_flag = models.BooleanField(verbose_name='是否入历史中心')
+    sync_flag = models.BooleanField(verbose_name='同步标识', default=False)
+    created_time = models.DateTimeField(auto_now_add=True, verbose_name='创建时间')
+    updated_time = models.DateTimeField(auto_now=True, verbose_name='上次修改时间')
+
+    def __str__(self):
+        return self.db_name
+
+    class Meta:
+        verbose_name = '数据同步任务配置'
+        verbose_name_plural = verbose_name
+
+
+class PushTaskInfo(models.Model):
+    """
+    数据推送任务信息表
+    """
+    tab_name = models.CharField(verbose_name='表名', max_length=128,
+                                help_text='实际存储表名，非上游源系统表名')
+    path = models.CharField(verbose_name='推送目录', max_length=128)
+    file_type = models.CharField(verbose_name='导出文件格式', max_length=3,
+                                 choices=(('ixf', 'ixf'), ('txt', 'txt')))
+    code_page = models.CharField(verbose_name='编码格式', max_length=10,
+                                 choices=(('1386', '1386'), ('1208', '1208')))
+    separator = models.CharField(verbose_name='导出字段分隔符', max_length=10, help_text='不指定则默认为，')
+    delimiter = models.CharField(verbose_name='字段限定符', max_length=10, help_text='不指定则默认为"')
+    val_flag = models.BooleanField(verbose_name='有效标识', default=True)
+    sync_flag = models.BooleanField(verbose_name='同步标识', default=False)
+    created_time = models.DateTimeField(auto_now_add=True, verbose_name='创建时间')
+    updated_time = models.DateTimeField(auto_now=True, verbose_name='上次修改时间')
+
+    def __str__(self):
+        return self.tab_name
+
+    class Meta:
+        verbose_name = '数据推送任务配置'
+        verbose_name_plural = verbose_name
