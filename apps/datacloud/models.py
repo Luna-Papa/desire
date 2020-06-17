@@ -10,7 +10,7 @@ class ChannelInfo(models.Model):
     """
     sys_name = models.CharField(verbose_name='源系统英文简称', max_length=50)
     chn_name = models.CharField(verbose_name='中文名称', max_length=128)
-    db_name = models.CharField(verbose_name='数据库名', max_length=128)
+    db_name = models.CharField(verbose_name='数据库名', max_length=128, unique=True)
     address = models.GenericIPAddressField(verbose_name='IP地址')
     port = models.CharField(verbose_name='端口', max_length=20)
     code_page = models.CharField(verbose_name='字符集', max_length=10)

@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'datacloud',  # ETL可视化配置
 ]
 
 MIDDLEWARE = [
