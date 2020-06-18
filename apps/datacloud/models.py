@@ -20,13 +20,13 @@ class ChannelInfo(models.Model):
     sync_flag = models.BooleanField(verbose_name='同步标识', default=False)
     created_time = models.DateTimeField(auto_now_add=True, verbose_name='创建时间')
     updated_time = models.DateTimeField(auto_now=True, verbose_name='上次修改时间')
-    chn_id = models.IntegerField(default=100000, verbose_name='数据源编号', help_text='自动生成的隐藏列')
+    chn_id = models.IntegerField(default=100000, verbose_name='数据源编号', help_text='自动生成的隐藏列', unique=True)
 
     def __str__(self):
         return self.db_name
 
     class Meta:
-        verbose_name = '数据源配置'
+        verbose_name = '数据源'
         verbose_name_plural = verbose_name
 
 
@@ -47,25 +47,24 @@ class ChkInfo(models.Model):
     )
 
     db_name = models.ForeignKey(ChannelInfo, on_delete=models.DO_NOTHING, verbose_name='源系统库名')
-    chk_id = models.IntegerField(verbose_name='检测条件编号')
-    chk_flag = models.CharField(verbose_name='检测条件', max_length=256)
+    chk_seq = models.IntegerField(verbose_name='检测条件编号', default=0)
     chk_name = models.CharField(verbose_name='检测名称', max_length=128)
+    chk_condition = models.CharField(verbose_name='检测条件', max_length=256)
+    chk_valid_condition = models.CharField(verbose_name='检测有效条件', max_length=128)
     date_type = models.CharField(verbose_name='数据日期', choices=DATE_TYPE_ITEMS, max_length=4,
                                  default=DATE_TYPE_02)
-    chk_condition = models.CharField(verbose_name='检测有效标识', max_length=128)
-    memo = models.CharField(verbose_name='备注', max_length=128)
+    memo = models.CharField(verbose_name='备注', max_length=128, null=True, blank=True)
     val_flag = models.BooleanField(verbose_name='有效标识', default=True)
     sync_flag = models.BooleanField(verbose_name='同步标识', default=False)
     created_time = models.DateTimeField(auto_now_add=True, verbose_name='创建时间')
     updated_time = models.DateTimeField(auto_now=True, verbose_name='上次修改时间')
-    sync_id = models.IntegerField(default=100000, verbose_name='数据卸载编号', help_text='自动生成的隐藏列')
-    load_id = models.IntegerField(default=100000, verbose_name='数据装载编号', help_text='自动生成的隐藏列')
+    chk_id = models.IntegerField(verbose_name='检测编号', help_text='自动生成的隐藏列', unique=True)
 
     def __str__(self):
-        return self.db_name
+        return self.chk_name
 
     class Meta:
-        verbose_name = '检测条件配置'
+        verbose_name = '检测条件'
         verbose_name_plural = verbose_name
 
 
@@ -127,13 +126,16 @@ class SyncTaskInfo(models.Model):
     sync_flag = models.BooleanField(verbose_name='同步标识', default=False)
     created_time = models.DateTimeField(auto_now_add=True, verbose_name='创建时间')
     updated_time = models.DateTimeField(auto_now=True, verbose_name='上次修改时间')
-    push_id = models.IntegerField(default=100000, verbose_name='数据推送编号', help_text='自动生成的隐藏列')
+    sync_id = models.IntegerField(default=100000, verbose_name='数据卸载编号',
+                                  help_text='自动生成的隐藏列', unique=True)
+    load_id = models.IntegerField(default=100000, verbose_name='数据装载编号',
+                                  help_text='自动生成的隐藏列', unique=True)
 
     def __str__(self):
         return self.db_name
 
     class Meta:
-        verbose_name = '数据同步任务配置'
+        verbose_name = '数据同步加载任务'
         verbose_name_plural = verbose_name
 
 
@@ -154,10 +156,11 @@ class PushTaskInfo(models.Model):
     sync_flag = models.BooleanField(verbose_name='同步标识', default=False)
     created_time = models.DateTimeField(auto_now_add=True, verbose_name='创建时间')
     updated_time = models.DateTimeField(auto_now=True, verbose_name='上次修改时间')
+    push_id = models.IntegerField(default=100000, verbose_name='数据推送编号', help_text='自动生成的隐藏列')
 
     def __str__(self):
         return self.tab_name
 
     class Meta:
-        verbose_name = '数据推送任务配置'
+        verbose_name = '数据推送任务'
         verbose_name_plural = verbose_name
