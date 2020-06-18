@@ -16,9 +16,11 @@ class ChannelInfo(models.Model):
     code_page = models.CharField(verbose_name='字符集', max_length=10)
     username = models.CharField(verbose_name='用户名', max_length=50)
     password = models.CharField(verbose_name='密码', max_length=50)
+    val_flag = models.BooleanField(verbose_name='有效标识', default=True)
     sync_flag = models.BooleanField(verbose_name='同步标识', default=False)
     created_time = models.DateTimeField(auto_now_add=True, verbose_name='创建时间')
     updated_time = models.DateTimeField(auto_now=True, verbose_name='上次修改时间')
+    chn_id = models.IntegerField(default=100000, verbose_name='数据源编号', help_text='自动生成的隐藏列')
 
     def __str__(self):
         return self.db_name
@@ -36,10 +38,12 @@ class ChkInfo(models.Model):
     DATE_TYPE_01 = 'T+0'
     DATE_TYPE_02 = 'T+1'
     DATE_TYPE_03 = 'T+2'
+    DATE_TYPE_04 = 'T+3'
     DATE_TYPE_ITEMS = (
         (DATE_TYPE_01, 'T+0'),
         (DATE_TYPE_02, 'T+1'),
         (DATE_TYPE_03, 'T+2'),
+        (DATE_TYPE_04, 'T+3'),
     )
 
     db_name = models.ForeignKey(ChannelInfo, on_delete=models.DO_NOTHING, verbose_name='源系统库名')
@@ -48,11 +52,14 @@ class ChkInfo(models.Model):
     chk_name = models.CharField(verbose_name='检测名称', max_length=128)
     date_type = models.CharField(verbose_name='数据日期', choices=DATE_TYPE_ITEMS, max_length=4,
                                  default=DATE_TYPE_02)
-    val_flag = models.CharField(verbose_name='检测有效标识', max_length=128)
+    chk_condition = models.CharField(verbose_name='检测有效标识', max_length=128)
     memo = models.CharField(verbose_name='备注', max_length=128)
+    val_flag = models.BooleanField(verbose_name='有效标识', default=True)
     sync_flag = models.BooleanField(verbose_name='同步标识', default=False)
     created_time = models.DateTimeField(auto_now_add=True, verbose_name='创建时间')
     updated_time = models.DateTimeField(auto_now=True, verbose_name='上次修改时间')
+    sync_id = models.IntegerField(default=100000, verbose_name='数据卸载编号', help_text='自动生成的隐藏列')
+    load_id = models.IntegerField(default=100000, verbose_name='数据装载编号', help_text='自动生成的隐藏列')
 
     def __str__(self):
         return self.db_name
@@ -89,14 +96,17 @@ class SyncTaskInfo(models.Model):
     DATE_TYPE_01 = 'T+0'
     DATE_TYPE_02 = 'T+1'
     DATE_TYPE_03 = 'T+2'
+    DATE_TYPE_04 = 'T+3'
     DATE_TYPE_ITEMS = (
         (DATE_TYPE_01, 'T+0'),
         (DATE_TYPE_02, 'T+1'),
         (DATE_TYPE_03, 'T+2'),
+        (DATE_TYPE_04, 'T+3'),
     )
 
     db_name = models.ForeignKey(ChannelInfo, on_delete=models.DO_NOTHING, verbose_name='源系统库名')
     tab_name = models.CharField(verbose_name='表名', max_length=128)
+    chk_name = models.ForeignKey(ChkInfo, on_delete=models.DO_NOTHING, verbose_name='检测名称')
     exp_method = models.CharField(verbose_name='导出方式', choices=EXP_METHOD_ITEMS,
                                   max_length=10, default=EXPORT)
     zl_info = models.CharField(verbose_name='增量标识', choices=(('Z', '增量'), ('Q', '全量')), max_length=1)
@@ -113,9 +123,11 @@ class SyncTaskInfo(models.Model):
     month_flag = models.BooleanField(verbose_name='是否仅保留当月数据', default=False,
                                      help_text='值为真时仅保留当月数据，每月2号自动清理；值为否时一直保留')
     his_flag = models.BooleanField(verbose_name='是否入历史中心')
+    val_flag = models.BooleanField(verbose_name='有效标识', default=True)
     sync_flag = models.BooleanField(verbose_name='同步标识', default=False)
     created_time = models.DateTimeField(auto_now_add=True, verbose_name='创建时间')
     updated_time = models.DateTimeField(auto_now=True, verbose_name='上次修改时间')
+    push_id = models.IntegerField(default=100000, verbose_name='数据推送编号', help_text='自动生成的隐藏列')
 
     def __str__(self):
         return self.db_name
