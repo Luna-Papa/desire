@@ -14,9 +14,16 @@ class ChannelInfoAdmin(admin.ModelAdmin):
         obj.sync_flag = False
         if not change:
             # 自动生成数据源编号，每次递增100000
-            max_chn_id = ChannelInfo.objects.all().aggregate(Max('chn_id'))['chn_id__max']
-            if max_chn_id:
-                obj.chn_id = max_chn_id + 100000
+            channel_count = ChannelInfo.objects.count()
+            if channel_count:
+                obj.chn_id = (channel_count + 1) * 100000
+            else:
+                obj.chn_id = 100000
+            # max_chn_id = ChannelInfo.objects.all().aggregate(Max('chn_id'))['chn_id__max']
+            # if max_chn_id:
+            #     obj.chn_id = max_chn_id + 100000
+            obj.chn_finish_id = obj.chn_id + 40000
+            obj.chn_backup_id = obj.chn_id + 50000
         return super(ChannelInfoAdmin, self).save_model(request, obj, form, change)
 
 
@@ -38,13 +45,19 @@ class ChkInfoAdmin(admin.ModelAdmin):
             obj.chk_id = chn_id + obj.chk_seq + 10000  # 检测编号规则是110001、110002
         return super(ChkInfoAdmin, self).save_model(request, obj, form, change)
 
+    # def formfield_for_foreignkey(self, db_field, request, **kwargs):
+    #     if db_field.name == 'chk_name':
+    #         kwargs['queryset'] = ChkInfo.objects.filter(db_name=)
+    #     return super(ChkInfoAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
+
 
 @admin.register(SyncTaskInfo)
 class SyncTaskInfoAdmin(admin.ModelAdmin):
-    list_display = ('db_name', 'chk_name', 'tab_name', 'exp_method', 'zl_info', 'outfile_type', 'his_flag', 'val_flag')
+    list_display = ('db_name', 'chk_name', 'tab_name', 'exp_method', 'zl_info', 'outfile_type',
+                    'backup_flag', 'his_flag', 'val_flag')
     fields = ('db_name', 'chk_name', 'tab_name', 'exp_method', 'zl_info', 'zl_col', 'ftp_file',
               'outfile_type', 'date_type', 'out_path', 'load_method', 'load_tab_tmp',
-              'load_tab_mir', 'month_flag', 'his_flag', 'val_flag')
+              'load_tab_mir', 'month_flag', 'backup_flag', 'his_flag', 'val_flag')
 
     def save_model(self, request, obj, form, change):
         obj.sync_flag = False
@@ -54,10 +67,10 @@ class SyncTaskInfoAdmin(admin.ModelAdmin):
             if task_info:
                 task_count = task_info.count()
                 obj.sync_id = chn_id + 20000 + task_count + 1
-                obj.load_id = chn_id + 40000 + task_count + 1
+                obj.load_id = chn_id + 30000 + task_count + 1
             else:
                 obj.sync_id = chn_id + 20001
-                obj.load_id = chn_id + 40001
+                obj.load_id = chn_id + 30001
         return super(SyncTaskInfoAdmin, self).save_model(request, obj, form, change)
 
 

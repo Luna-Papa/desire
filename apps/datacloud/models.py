@@ -20,7 +20,9 @@ class ChannelInfo(models.Model):
     sync_flag = models.BooleanField(verbose_name='同步标识', default=False)
     created_time = models.DateTimeField(auto_now_add=True, verbose_name='创建时间')
     updated_time = models.DateTimeField(auto_now=True, verbose_name='上次修改时间')
-    chn_id = models.IntegerField(default=100000, verbose_name='数据源编号', help_text='自动生成的隐藏列', unique=True)
+    chn_id = models.IntegerField(verbose_name='渠道编号', help_text='自动生成的隐藏列', unique=True)
+    chn_finish_id = models.IntegerField(verbose_name='渠道完成编号', help_text='自动生成的隐藏列', unique=True)
+    chn_backup_id = models.IntegerField(verbose_name='渠道备份编号', help_text='自动生成的隐藏列', unique=True)
 
     def __str__(self):
         return self.db_name
@@ -123,6 +125,7 @@ class SyncTaskInfo(models.Model):
                                      help_text='值为真时仅保留当月数据，每月2号自动清理；值为否时一直保留')
     his_flag = models.BooleanField(verbose_name='是否入历史中心')
     val_flag = models.BooleanField(verbose_name='有效标识', default=True)
+    backup_flag = models.BooleanField(verbose_name='备份标识', default=False)
     sync_flag = models.BooleanField(verbose_name='同步标识', default=False)
     created_time = models.DateTimeField(auto_now_add=True, verbose_name='创建时间')
     updated_time = models.DateTimeField(auto_now=True, verbose_name='上次修改时间')
