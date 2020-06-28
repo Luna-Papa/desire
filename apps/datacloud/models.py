@@ -21,7 +21,7 @@ class ChannelInfo(models.Model):
     created_time = models.DateTimeField(auto_now_add=True, verbose_name='创建时间')
     updated_time = models.DateTimeField(auto_now=True, verbose_name='上次修改时间')
     chn_id = models.IntegerField(verbose_name='渠道编号', help_text='自动生成的隐藏列', unique=True)
-    chn_finish_id = models.IntegerField(verbose_name='渠道完成编号', help_text='自动生成的隐藏列', unique=True)
+    # chn_done_id = models.IntegerField(verbose_name='渠道完成编号', help_text='自动生成的隐藏列', unique=True)
     chn_backup_id = models.IntegerField(verbose_name='渠道备份编号', help_text='自动生成的隐藏列', unique=True)
 
     def __str__(self):
@@ -37,30 +37,27 @@ class ChkInfo(models.Model):
     条件检测表
     """
 
-    DATE_TYPE_01 = 'T+0'
-    DATE_TYPE_02 = 'T+1'
-    DATE_TYPE_03 = 'T+2'
-    DATE_TYPE_04 = 'T+3'
     DATE_TYPE_ITEMS = (
-        (DATE_TYPE_01, 'T+0'),
-        (DATE_TYPE_02, 'T+1'),
-        (DATE_TYPE_03, 'T+2'),
-        (DATE_TYPE_04, 'T+3'),
+        ('T+0', 'T+0'),
+        ('T+1', 'T+1'),
+        ('T+2', 'T+2'),
+        ('T+3', 'T+3'),
     )
 
     db_name = models.ForeignKey(ChannelInfo, on_delete=models.DO_NOTHING, verbose_name='源系统库名')
     chk_seq = models.IntegerField(verbose_name='检测条件编号', default=0)
-    chk_name = models.CharField(verbose_name='检测名称', max_length=128)
+    chk_name = models.CharField(verbose_name='检测名称', max_length=128, unique=True)
     chk_condition = models.CharField(verbose_name='检测条件', max_length=256)
     chk_valid_condition = models.CharField(verbose_name='检测有效条件', max_length=128)
     date_type = models.CharField(verbose_name='数据日期', choices=DATE_TYPE_ITEMS, max_length=4,
-                                 default=DATE_TYPE_02)
+                                 default='T+1')
     memo = models.CharField(verbose_name='备注', max_length=128, null=True, blank=True)
     val_flag = models.BooleanField(verbose_name='有效标识', default=True)
     sync_flag = models.BooleanField(verbose_name='同步标识', default=False)
     created_time = models.DateTimeField(auto_now_add=True, verbose_name='创建时间')
     updated_time = models.DateTimeField(auto_now=True, verbose_name='上次修改时间')
-    chk_id = models.IntegerField(verbose_name='检测编号', help_text='自动生成的隐藏列', unique=True)
+    chk_id = models.IntegerField(verbose_name='渠道检测编号', help_text='渠道检测调度任务号', unique=True)
+    chk_done_id = models.IntegerField(verbose_name='渠道完成编号', help_text='渠道完成调度任务号', unique=True)
 
     def __str__(self):
         return self.chk_name
@@ -76,15 +73,11 @@ class SyncTaskInfo(models.Model):
     """
 
     # 定义数据卸载格式参数
-    EXPORT = 'export'
-    HPU = 'hpu'
-    FTP = 'ftp'
-    CDC = 'cdc'
     EXP_METHOD_ITEMS = (
-        (EXPORT, 'export'),
-        (HPU, 'hpu'),
-        (FTP, 'ftp'),
-        (CDC, 'cdc'),
+        ('export', 'export'),
+        ('hpu', 'hpu'),
+        ('ftp', 'ftp'),
+        ('cdc', 'cdc'),
     )
 
     LOAD_METHOD_ITEMS = (
@@ -94,27 +87,23 @@ class SyncTaskInfo(models.Model):
         ('delete_insert', 'delete_insert'),
     )
 
-    DATE_TYPE_01 = 'T+0'
-    DATE_TYPE_02 = 'T+1'
-    DATE_TYPE_03 = 'T+2'
-    DATE_TYPE_04 = 'T+3'
     DATE_TYPE_ITEMS = (
-        (DATE_TYPE_01, 'T+0'),
-        (DATE_TYPE_02, 'T+1'),
-        (DATE_TYPE_03, 'T+2'),
-        (DATE_TYPE_04, 'T+3'),
+        ('T+0', 'T+0'),
+        ('T+1', 'T+1'),
+        ('T+2', 'T+2'),
+        ('T+3', 'T+3'),
     )
 
     db_name = models.ForeignKey(ChannelInfo, on_delete=models.DO_NOTHING, verbose_name='源系统库名')
     tab_name = models.CharField(verbose_name='表名', max_length=128)
     chk_name = models.ForeignKey(ChkInfo, on_delete=models.DO_NOTHING, verbose_name='检测名称')
     exp_method = models.CharField(verbose_name='导出方式', choices=EXP_METHOD_ITEMS,
-                                  max_length=10, default=EXPORT)
+                                  max_length=10, default='export')
     zl_info = models.CharField(verbose_name='增量标识', choices=(('Z', '增量'), ('Q', '全量')), max_length=1)
     zl_col = models.CharField(verbose_name='增量同步检测字段', max_length=50, null=True, blank=True)
     ftp_file = models.CharField(verbose_name='FTP同步条件', max_length=256, null=True, blank=True)
     date_type = models.CharField(verbose_name='数据日期', choices=DATE_TYPE_ITEMS, max_length=4,
-                                 default=DATE_TYPE_02)
+                                 default='T+1')
     out_path = models.CharField(verbose_name='数据导出目录', max_length=128, null=True, blank=True)
     outfile_type = models.CharField(verbose_name='数据导出格式', max_length=3,
                                     choices=(('ixf', 'IXF'), ('del', 'DEL')))
@@ -146,9 +135,10 @@ class PushTaskInfo(models.Model):
     """
     数据推送任务信息表
     """
-    db_name = models.ForeignKey(ChannelInfo, on_delete=models.DO_NOTHING, verbose_name='源系统库名')
-    tab_name = models.CharField(verbose_name='表名', max_length=128,
-                                help_text='实际存储表名，非上游源系统表名')
+    source_tab_name = models.ForeignKey(SyncTaskInfo, on_delete=models.DO_NOTHING, verbose_name='源系统表名')
+    # db_name = models.ForeignKey(ChannelInfo, on_delete=models.DO_NOTHING, verbose_name='源系统库名')
+    push_tab_name = models.CharField(verbose_name='表名', max_length=128,
+                                     help_text='实际存储表名，非上游源系统表名')
     path = models.CharField(verbose_name='推送目录', max_length=128)
     file_type = models.CharField(verbose_name='导出文件格式', max_length=3,
                                  choices=(('ixf', 'ixf'), ('txt', 'txt')))
@@ -165,7 +155,7 @@ class PushTaskInfo(models.Model):
     push_id = models.IntegerField(default=100000, verbose_name='数据推送编号', help_text='自动生成的隐藏列')
 
     def __str__(self):
-        return self.tab_name
+        return self.push_tab_name
 
     class Meta:
         verbose_name = '数据推送任务'

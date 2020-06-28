@@ -19,7 +19,7 @@ class ChannelInfoAdmin(admin.ModelAdmin):
                 obj.chn_id = (channel_count + 1) * 100000
             else:
                 obj.chn_id = 100000
-            obj.chn_finish_id = obj.chn_id + 40000
+            # obj.chn_finish_id = obj.chn_id + 40000
             obj.chn_backup_id = obj.chn_id + 50000
         return super(ChannelInfoAdmin, self).save_model(request, obj, form, change)
 
@@ -40,6 +40,7 @@ class ChkInfoAdmin(admin.ModelAdmin):
                 obj.chk_seq = 1
             chn_id = ChannelInfo.objects.get(db_name=obj.db_name).chn_id
             obj.chk_id = chn_id + obj.chk_seq + 10000  # 检测编号规则是110001、110002
+            obj.chk_done_id = chn_id + obj.chk_seq + 40000  # 渠道检测完成编号规则是140001、140002
         return super(ChkInfoAdmin, self).save_model(request, obj, form, change)
 
 
@@ -68,8 +69,8 @@ class SyncTaskInfoAdmin(admin.ModelAdmin):
 
 @admin.register(PushTaskInfo)
 class PushTaskInfoAdmin(admin.ModelAdmin):
-    list_display = ('db_name', 'tab_name', 'file_type', 'code_page', 'path', 'val_flag')
-    fields = ('db_name', 'tab_name', 'path', 'file_type', 'code_page', 'separator', 'delimiter', 'val_flag')
+    list_display = ('source_tab_name', 'push_tab_name', 'file_type', 'code_page', 'path', 'val_flag')
+    fields = ('source_tab_name', 'push_tab_name', 'path', 'file_type', 'code_page', 'separator', 'delimiter', 'val_flag')
 
     def save_model(self, request, obj, form, change):
         obj.sync_flag = False
