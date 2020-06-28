@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import ChannelInfo, ChkInfo, SyncTaskInfo, PushTaskInfo
+from .models import ChannelInfo, ChkInfo, SyncTaskInfo, PushTaskInfo, ScriptConfig
 from django.db.models import Max, Count
 
 # Register your models here.
@@ -21,6 +21,7 @@ class ChannelInfoAdmin(admin.ModelAdmin):
                 obj.chn_id = 100000
             # obj.chn_finish_id = obj.chn_id + 40000
             obj.chn_backup_id = obj.chn_id + 50000
+            obj.new_record_flag = True
         return super(ChannelInfoAdmin, self).save_model(request, obj, form, change)
 
 
@@ -41,6 +42,7 @@ class ChkInfoAdmin(admin.ModelAdmin):
             chn_id = ChannelInfo.objects.get(db_name=obj.db_name).chn_id
             obj.chk_id = chn_id + obj.chk_seq + 10000  # 检测编号规则是110001、110002
             obj.chk_done_id = chn_id + obj.chk_seq + 40000  # 渠道检测完成编号规则是140001、140002
+            obj.new_record_flag = True
         return super(ChkInfoAdmin, self).save_model(request, obj, form, change)
 
 
@@ -64,6 +66,7 @@ class SyncTaskInfoAdmin(admin.ModelAdmin):
             else:
                 obj.sync_id = chn_id + 20001
                 obj.load_id = chn_id + 30001
+            obj.new_record_flag = True
         return super(SyncTaskInfoAdmin, self).save_model(request, obj, form, change)
 
 
@@ -83,4 +86,11 @@ class PushTaskInfoAdmin(admin.ModelAdmin):
                 obj.push_id = chn_id + 60000 + task_count + 1
             else:
                 obj.push_id = chn_id + 60001
+            obj.new_record_flag = True
         return super(PushTaskInfoAdmin, self).save_model(request, obj, form, change)
+
+
+@admin.register(ScriptConfig)
+class ScriptConfigAdmin(admin.ModelAdmin):
+    list_display = ('type', 'script', 'parameter')
+    fields = ('type', 'script', 'parameter')

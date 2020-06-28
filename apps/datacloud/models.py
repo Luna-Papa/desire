@@ -18,6 +18,7 @@ class ChannelInfo(models.Model):
     password = models.CharField(verbose_name='密码', max_length=50)
     val_flag = models.BooleanField(verbose_name='有效标识', default=True)
     sync_flag = models.BooleanField(verbose_name='同步标识', default=False)
+    new_record_flag = models.BooleanField(verbose_name='是否为新记录', default=True)
     created_time = models.DateTimeField(auto_now_add=True, verbose_name='创建时间')
     updated_time = models.DateTimeField(auto_now=True, verbose_name='上次修改时间')
     chn_id = models.IntegerField(verbose_name='渠道编号', help_text='自动生成的隐藏列', unique=True)
@@ -54,6 +55,7 @@ class ChkInfo(models.Model):
     memo = models.CharField(verbose_name='备注', max_length=128, null=True, blank=True)
     val_flag = models.BooleanField(verbose_name='有效标识', default=True)
     sync_flag = models.BooleanField(verbose_name='同步标识', default=False)
+    new_record_flag = models.BooleanField(verbose_name='是否为新记录', default=True)
     created_time = models.DateTimeField(auto_now_add=True, verbose_name='创建时间')
     updated_time = models.DateTimeField(auto_now=True, verbose_name='上次修改时间')
     chk_id = models.IntegerField(verbose_name='渠道检测编号', help_text='渠道检测调度任务号', unique=True)
@@ -116,6 +118,7 @@ class SyncTaskInfo(models.Model):
     val_flag = models.BooleanField(verbose_name='有效标识', default=True)
     backup_flag = models.BooleanField(verbose_name='备份标识', default=False)
     sync_flag = models.BooleanField(verbose_name='同步标识', default=False)
+    new_record_flag = models.BooleanField(verbose_name='是否为新记录', default=True)
     created_time = models.DateTimeField(auto_now_add=True, verbose_name='创建时间')
     updated_time = models.DateTimeField(auto_now=True, verbose_name='上次修改时间')
     sync_id = models.IntegerField(default=100000, verbose_name='数据卸载编号',
@@ -151,6 +154,7 @@ class PushTaskInfo(models.Model):
                                  help_text='不指定则默认为"')
     val_flag = models.BooleanField(verbose_name='有效标识', default=True)
     sync_flag = models.BooleanField(verbose_name='同步标识', default=False)
+    new_record_flag = models.BooleanField(verbose_name='是否为新记录', default=True)
     created_time = models.DateTimeField(auto_now_add=True, verbose_name='创建时间')
     updated_time = models.DateTimeField(auto_now=True, verbose_name='上次修改时间')
     push_id = models.IntegerField(default=100000, verbose_name='数据推送编号', help_text='自动生成的隐藏列')
@@ -160,4 +164,20 @@ class PushTaskInfo(models.Model):
 
     class Meta:
         verbose_name = '数据推送任务'
+        verbose_name_plural = verbose_name
+
+
+class ScriptConfig(models.Model):
+    """
+    后台SHELL脚本配置表
+    """
+    type = models.IntegerField(verbose_name='类别编号', unique=True)
+    script = models.CharField(verbose_name='shell脚本配置', max_length=200)
+    parameter = models.CharField(verbose_name='脚本传入参数', max_length=200, help_text='多个参数以空格分隔')
+
+    def __str__(self):
+        return self.script
+
+    class Meta:
+        verbose_name = '分类任务脚本配置'
         verbose_name_plural = verbose_name
