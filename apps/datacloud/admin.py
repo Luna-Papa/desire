@@ -19,9 +19,6 @@ class ChannelInfoAdmin(admin.ModelAdmin):
                 obj.chn_id = (channel_count + 1) * 100000
             else:
                 obj.chn_id = 100000
-            # max_chn_id = ChannelInfo.objects.all().aggregate(Max('chn_id'))['chn_id__max']
-            # if max_chn_id:
-            #     obj.chn_id = max_chn_id + 100000
             obj.chn_finish_id = obj.chn_id + 40000
             obj.chn_backup_id = obj.chn_id + 50000
         return super(ChannelInfoAdmin, self).save_model(request, obj, form, change)
@@ -44,11 +41,6 @@ class ChkInfoAdmin(admin.ModelAdmin):
             chn_id = ChannelInfo.objects.get(db_name=obj.db_name).chn_id
             obj.chk_id = chn_id + obj.chk_seq + 10000  # 检测编号规则是110001、110002
         return super(ChkInfoAdmin, self).save_model(request, obj, form, change)
-
-    # def formfield_for_foreignkey(self, db_field, request, **kwargs):
-    #     if db_field.name == 'chk_name':
-    #         kwargs['queryset'] = ChkInfo.objects.filter(db_name=)
-    #     return super(ChkInfoAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
 
 @admin.register(SyncTaskInfo)
