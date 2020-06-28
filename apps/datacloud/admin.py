@@ -69,11 +69,12 @@ class SyncTaskInfoAdmin(admin.ModelAdmin):
 
 @admin.register(PushTaskInfo)
 class PushTaskInfoAdmin(admin.ModelAdmin):
-    list_display = ('source_tab_name', 'push_tab_name', 'file_type', 'code_page', 'path', 'val_flag')
+    list_display = ('db_name', 'source_tab_name', 'push_tab_name', 'file_type', 'code_page', 'path', 'val_flag')
     fields = ('source_tab_name', 'push_tab_name', 'path', 'file_type', 'code_page', 'separator', 'delimiter', 'val_flag')
 
     def save_model(self, request, obj, form, change):
         obj.sync_flag = False
+        obj.db_name = SyncTaskInfo.objects.filter(tab_name=obj.source_tab_name)[0].db_name
         chn_id = ChannelInfo.objects.get(db_name=obj.db_name).chn_id
         if not change:
             task_info = PushTaskInfo.objects.filter(db_name=obj.db_name)

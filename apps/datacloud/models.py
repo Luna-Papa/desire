@@ -135,6 +135,7 @@ class PushTaskInfo(models.Model):
     """
     数据推送任务信息表
     """
+    db_name = models.ForeignKey(ChannelInfo, on_delete=models.DO_NOTHING, verbose_name='源系统库名')
     source_tab_name = models.ForeignKey(SyncTaskInfo, on_delete=models.DO_NOTHING, verbose_name='源系统表名')
     # db_name = models.ForeignKey(ChannelInfo, on_delete=models.DO_NOTHING, verbose_name='源系统库名')
     push_tab_name = models.CharField(verbose_name='表名', max_length=128,
