@@ -130,3 +130,7 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'static'),
 )
+
+INTERFACE_DIR = (
+    os.path.join(BASE_DIR, 'apps', 'datacloud', 'interface')
+)

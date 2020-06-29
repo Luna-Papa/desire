@@ -1,0 +1,18 @@
+delete from odsuser.ODM_ETL_JOB_NAME where id in (select id from odsuser.init_job);
+INSERT INTO odsuser.ODM_ETL_JOB_NAME (id,job_name) SELECT id,jobcnm from odsuser.init_job;
+delete from odsuser.ODM_ETL_JOB_PARAM where jobid in (SELECT id from odsuser.init_job) and paramname='sysid';
+delete from odsuser.ODM_ETL_JOB_PARAM where jobid in (SELECT id from odsuser.init_job) and paramname='params';
+delete from odsuser.ODM_ETL_JOB_PARAM where jobid in (SELECT id from odsuser.init_job) and paramname='appUrl';
+delete from odsuser.ODM_ETL_JOB_PARAM where jobid in (SELECT id from odsuser.init_job) and paramname='param';
+insert into odsuser.ODM_ETL_JOB_PARAM (jobid,paramname,paramvalue) select id,'sysid',CHAR(id) from odsuser.init_job;
+insert into odsuser.ODM_ETL_JOB_PARAM (jobid,paramname,paramvalue) (select id,'params','appUrl='||appUrl||';param='||param from odsuser.init_job);
+insert into odsuser.ODM_ETL_JOB_PARAM (jobid,paramname,paramvalue) (select id,'appUrl',appUrl from odsuser.init_job);
+insert into odsuser.ODM_ETL_JOB_PARAM (jobid,paramname,paramvalue) (select id,'param',param from odsuser.init_job);
+delete from odsuser.ODM_JOBPARAM_ATTRIBUTEwhere id in (SELECT id job_name from odsuser.init_job) and preference_id='其他' and param_name='appUrl';
+delete from odsuser.ODM_JOBPARAM_ATTRIBUTE where id in (SELECT id job_name from odsuser.init_job) and preference_id='其他' and param_name='param';
+INSERT INTO odsuser.ODM_JOBPARAM_ATTRIBUTE(id,preference_id,param_name,param_value,param_desc,categ_id) SELECT ID,'其他','appUrl',appUrl,'程序路径',81 from odsuser.init_job;
+INSERT INTO odsuser.ODM_JOBPARAM_ATTRIBUTE(id,preference_id,param_name,param_value,param_desc,categ_id) SELECT ID,'其他','param',param,'param',81 from odsuser.init_job;
+DELETE from odsuser.ODM_ETL_JOB WHERE ID IN (SELECT ID from odsuser.init_job);
+INSERT INTO odsuser.ODM_ETL_JOB(ID, JOBID, JOBNAME, JOBSOURCE, SYSID) SELECT ID,132,jobcnm,'其他',ID from odsuser.init_job;
+delete from odsuser.SCTJOB where JOBID in (select jobid from odsuser.init_job);
+insert into odsuser.SCTJOB select jobid,CHAR(jobtype),id,jobcnm,CHAR(CURRENT TIMESTAMP),'',jobpri,'','',stgid,chaid,jobcyc,'1',CHAR(JOBIGN),CHAR(jobval) from odsuser.init_job;

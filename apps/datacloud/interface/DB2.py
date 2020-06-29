@@ -3,9 +3,7 @@ import ibm_db
 
 class Dd2ExecuteSQL:
 
-    def __init__(self):
-        conn_str = "DATABASE=test;HOSTNAME='10.0.0.0';PORT=60000;PROTOCOL=TCPIP;" \
-                   "UID=username;PWD=password;"
+    def __init__(self, conn_str):
         try:
             self.conn = ibm_db.connect(conn_str, "", "")
         except:
