@@ -73,8 +73,8 @@ if __name__ == '__main__':
             JOBIGN = 0
 
             # SCTFLW所需字段
-            FLWJOB = chk.db_name.chn_id + 1
-            FLWPRO = chk.chk_id
+            FLWJOB = chk.chk_id
+            FLWPRO = chk.db_name.chn_id + 1
 
             # 拼接DB2 SQL语句
             chk_sql1 = eval('f' + '"' + get_sql_stmt('INIT_JOB') + '"')
@@ -112,8 +112,8 @@ if __name__ == '__main__':
             JOBIGN = 0
 
             # SCTFLW所需字段
-            FLWJOB = sync_task.chk_name.chk_id
-            FLWPRO = sync_task.sync_id
+            FLWJOB = sync_task.sync_id
+            FLWPRO = sync_task.chk_name.chk_id
 
             # 拼接DB2 SQL语句
             sync_task_sql1 = eval('f' + '"' + get_sql_stmt('INIT_JOB') + '"')
@@ -140,8 +140,8 @@ if __name__ == '__main__':
             JOBIGN = 0
 
             # SCTFLW所需字段
-            FLWJOB = sync_task.sync_id
-            FLWPRO = sync_task.load_id
+            FLWJOB = sync_task.load_id
+            FLWPRO = sync_task.sync_id
 
             # 拼接DB2 SQL语句
             load_task_sql1 = eval('f' + '"' + get_sql_stmt('INIT_JOB') + '"')
