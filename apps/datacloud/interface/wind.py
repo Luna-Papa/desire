@@ -162,5 +162,39 @@ if __name__ == '__main__':
     push_task_info = PushTaskInfo.objects.filter(new_record_flag=True)
     if push_task_info:
         for push_task in push_task_info:
-            pass
+
+            # InitJob所需字段
+            ID = push_task.push_id
+            JOBTYPE = 1
+            JOBCNM = f'数据推送-{push_task.db_name.chn_name}-{push_task.push_tab_name}'
+            JOBID = push_task.push_id
+            JOBPRI = 1
+            STGID = 60000
+            CHAID = push_task.db_name.chn_id
+            JOBCYC = 'D'
+            APPURL = ScriptConfig.objects.get(type=40000).script
+            PARAM = ''
+            JOBVAL = 1
+            JOBIGN = 0
+
+            # SCTFLW所需字段
+            FLWJOB = push_task.push_id
+            FLWPRO = push_task.source_tab_name.chk_name.chk_done_id
+
+            # 拼接DB2 SQL语句
+            push_task_sql1 = eval('f' + '"' + get_sql_stmt('INIT_JOB') + '"')
+            push_task_sql2 = eval('f' + '"' + get_sql_stmt('SCTFLW') + '"')  # 依赖关系：渠道检测完成 -> 推送
+
+            # 执行DB2 SQL语句
+            # ibm_db.exec_immediate(cur_conn, push_task_sql1)
+            # ibm_db.exec_immediate(cur_conn, push_task_sql2)
+
+            # 执行完成后，将该条记录的新增记录标识为否
+            # push_task.new_record_flag = False
+            # push_task.save()
+
+    ##########################################
+    # 处理数据备份任务
+    ##########################################
+
 
