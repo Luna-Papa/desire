@@ -2,7 +2,6 @@ import os
 from django.core.wsgi import get_wsgi_application
 from datetime import datetime
 import ibm_db
-from desire.settings import INTERFACE_DIR
 from datacloud.interface.tools import get_db_conn, get_sql_stmt
 
 # 加载django项目环境参数
