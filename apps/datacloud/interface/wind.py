@@ -11,7 +11,6 @@ application = get_wsgi_application()
 
 from datacloud.models import ChannelInfo, ChkInfo, SyncTaskInfo, PushTaskInfo, ScriptConfig
 
-
 if __name__ == '__main__':
 
     # db_conn = get_db_conn('ETL-Database')
@@ -23,7 +22,9 @@ if __name__ == '__main__':
 
     channel_info = ChannelInfo.objects.filter(new_record_flag=True)
     if channel_info:
-        # 插入调度表 <SCTCHA> 和 <SCTMSG_JOB_REL>
+        """
+        渠道配置需要写入调度表 <SCTCHA> 和 <SCTMSG_JOB_REL>
+        """
         for chn in channel_info:
             # STCHA所需字段
             CHAID = chn.chn_id
@@ -39,12 +40,35 @@ if __name__ == '__main__':
             MSGVAL = 1
 
             # 拼接DB2 SQL语句
-            chn_sql1 = eval('f' + '"' + get_sql_stmt('SCTCHA') + '"')
-            chn_sql2 = eval('f' + '"' + get_sql_stmt('SCTMSG_JOB_REL') + '"')
+            chn_sql_cha = eval('f' + '"' + get_sql_stmt('SCTCHA') + '"')
+            chn_sql_rel = eval('f' + '"' + get_sql_stmt('SCTMSG_JOB_REL') + '"')
 
             # 执行DB2 SQL语句
-            # ibm_db.exec_immediate(cur_conn, chn_sql1)
-            # ibm_db.exec_immediate(cur_conn, chn_sql2)
+            # ibm_db.exec_immediate(cur_conn, chn_sql_cha)
+            # ibm_db.exec_immediate(cur_conn, chn_sql_rel)
+
+            # 生成渠道首作业信息
+
+            """
+            一个渠道对应一个备份作业，此处需要将备份作业的相关信息生成到InitJob，
+            但此时不能插入作业依赖关系： 渠道完成 -> 备份，
+            一个渠道可能有多个完成作业，因此渠道完成到备份是多对一。
+            """
+            ID = chn.chn_backup_id
+            JOBTYPE = 1
+            JOBCNM = f'数据备份-{chn.chn_name}'
+            JOBID = chn.chn_backup_id
+            JOBPRI = 1
+            STGID = 50000
+            CHAID = chn.chn_id
+            JOBCYC = 'D'
+            APPURL = ScriptConfig.objects.get(type=50000).script
+            PARAM = ''
+            JOBVAL = 1
+            JOBIGN = 0
+
+            chn_sql_init_back = eval('f' + '"' + get_sql_stmt('INIT_JOB') + '"')
+            # ibm_db.exec_immediate(cur_conn, chn_sql_init_back)
 
             # 执行完成后，将该条记录的新增记录标识为否
             # chn.new_record_flag = False
@@ -57,7 +81,6 @@ if __name__ == '__main__':
     chk_info = ChkInfo.objects.filter(new_record_flag=True)
     if chk_info:
         for chk in chk_info:
-
             # InitJob所需字段
             ID = chk.chk_id
             JOBTYPE = 1
@@ -83,6 +106,29 @@ if __name__ == '__main__':
             # 执行DB2 SQL语句
             # ibm_db.exec_immediate(cur_conn, chk_sql1)
             # ibm_db.exec_immediate(cur_conn, chk_sql2)
+
+            # 生成渠道完成作业信息
+            ID = chk.chk_done_id
+            JOBTYPE = 1
+            JOBCNM = f'数据检测-{chk.chk_name}-完成'
+            JOBID = chk.chk_done_id
+            JOBPRI = 1
+            STGID = 40000
+            CHAID = chk.db_name.chn_id
+            JOBCYC = 'D'
+            APPURL = ScriptConfig.objects.get(type=40000).script
+            PARAM = ''
+            JOBVAL = 1
+            JOBIGN = 0
+
+            chk_sql3 = eval('f' + '"' + get_sql_stmt('INIT_JOB') + '"')
+            # ibm_db.exec_immediate(cur_conn, chk_sql3)
+
+            # 生成渠道完成作业与备份作业的依赖关系
+            FLWJOB = chk.db_name.chn_backup_id
+            FLWPRO = chk.chk_done_id
+            chk_sql4 = eval('f' + '"' + get_sql_stmt('SCTFLW') + '"')  # 依赖关系：渠道完成作业 -> 备份
+            # ibm_db.exec_immediate(cur_conn, chk_sql4)
 
             # 执行完成后，将该条记录的新增记录标识为否
             # chk.new_record_flag = False
@@ -151,6 +197,15 @@ if __name__ == '__main__':
             # ibm_db.exec_immediate(cur_conn, load_task_sql1)
             # ibm_db.exec_immediate(cur_conn, load_task_sql2)
 
+            # 生成装载任务与渠道完成任务依赖关系
+
+            # SCTFLW所需字段
+            FLWJOB = sync_task.chk_name.chk_done_id
+            FLWPRO = sync_task.load_id
+
+            load_task_sql3 = eval('f' + '"' + get_sql_stmt('SCTFLW') + '"')  # 依赖关系：装载 -> 渠道完成
+            # ibm_db.exec_immediate(cur_conn, load_task_sql3)
+
             # 执行完成后，将该条记录的新增记录标识为否
             # sync_task.new_record_flag = False
             # sync_task.save()
@@ -162,7 +217,6 @@ if __name__ == '__main__':
     push_task_info = PushTaskInfo.objects.filter(new_record_flag=True)
     if push_task_info:
         for push_task in push_task_info:
-
             # InitJob所需字段
             ID = push_task.push_id
             JOBTYPE = 1
@@ -192,9 +246,3 @@ if __name__ == '__main__':
             # 执行完成后，将该条记录的新增记录标识为否
             # push_task.new_record_flag = False
             # push_task.save()
-
-    ##########################################
-    # 处理数据备份任务
-    ##########################################
-
-
