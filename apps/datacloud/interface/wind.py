@@ -12,7 +12,7 @@ from datacloud.models import ChannelInfo, ChkInfo, SyncTaskInfo, PushTaskInfo, S
 
 if __name__ == '__main__':
 
-    # db_conn = get_db_conn('ETL-Database')
+    db_conn = get_db_conn('ETL-Database')
     # cur_conn = ibm_db.connect(db_conn, "", "")
 
     ##########################################
@@ -47,6 +47,21 @@ if __name__ == '__main__':
             # ibm_db.exec_immediate(cur_conn, chn_sql_rel)
 
             # 生成渠道首作业信息
+            ID = chn.chn_id + 1
+            JOBTYPE = 1
+            JOBCNM = f'渠道收作业-{chn.chn_name}'
+            JOBID = chn.chn_id + 1
+            JOBPRI = 1
+            STGID = 1
+            CHAID = chn.chn_id + 1
+            JOBCYC = 'D'
+            APPURL = ScriptConfig.objects.get(type=1).script
+            PARAM = ''
+            JOBVAL = 1
+            JOBIGN = 0
+
+            chn_sql_init_begin = eval('f' + '"' + get_sql_stmt('INIT_JOB') + '"')
+            # ibm_db.exec_immediate(cur_conn, chn_sql_init_begin)
 
             """
             一个渠道对应一个备份作业，此处需要将备份作业的相关信息生成到InitJob，
@@ -225,7 +240,7 @@ if __name__ == '__main__':
             STGID = 60000
             CHAID = push_task.db_name.chn_id
             JOBCYC = 'D'
-            APPURL = ScriptConfig.objects.get(type=40000).script
+            APPURL = ScriptConfig.objects.get(type=60000).script
             PARAM = ''
             JOBVAL = 1
             JOBIGN = 0
