@@ -49,7 +49,7 @@ if __name__ == '__main__':
             # 生成渠道首作业信息
             ID = chn.chn_id + 1
             JOBTYPE = 1
-            JOBCNM = f'渠道收作业-{chn.chn_name}'
+            JOBCNM = f'渠道首作业-{chn.chn_name}'
             JOBID = chn.chn_id + 1
             JOBPRI = 1
             STGID = 1
@@ -77,7 +77,7 @@ if __name__ == '__main__':
             CHAID = chn.chn_id
             JOBCYC = 'D'
             APPURL = ScriptConfig.objects.get(type=50000).script
-            PARAM = ''
+            PARAM = ScriptConfig.objects.get(type=50000).parameter
             JOBVAL = 1
             JOBIGN = 0
 
@@ -105,7 +105,7 @@ if __name__ == '__main__':
             CHAID = chk.db_name.chn_id
             JOBCYC = 'D'
             APPURL = ScriptConfig.objects.get(type=10000).script
-            PARAM = ''
+            PARAM = ScriptConfig.objects.get(type=10000).parameter
             JOBVAL = 1
             JOBIGN = 0
 
@@ -131,7 +131,7 @@ if __name__ == '__main__':
             CHAID = chk.db_name.chn_id
             JOBCYC = 'D'
             APPURL = ScriptConfig.objects.get(type=40000).script
-            PARAM = ''
+            PARAM = ScriptConfig.objects.get(type=40000).parameter
             JOBVAL = 1
             JOBIGN = 0
 
@@ -167,7 +167,7 @@ if __name__ == '__main__':
             CHAID = sync_task.db_name.chn_id
             JOBCYC = 'D'
             APPURL = ScriptConfig.objects.get(type=20000).script
-            PARAM = ''
+            PARAM = ScriptConfig.objects.get(type=20000).parameter
             JOBVAL = 1
             JOBIGN = 0
 
@@ -195,7 +195,7 @@ if __name__ == '__main__':
             CHAID = sync_task.db_name.chn_id
             JOBCYC = 'D'
             APPURL = ScriptConfig.objects.get(type=30000).script
-            PARAM = ''
+            PARAM = ScriptConfig.objects.get(type=30000).parameter
             JOBVAL = 1
             JOBIGN = 0
 
@@ -241,7 +241,7 @@ if __name__ == '__main__':
             CHAID = push_task.db_name.chn_id
             JOBCYC = 'D'
             APPURL = ScriptConfig.objects.get(type=60000).script
-            PARAM = ''
+            PARAM = ScriptConfig.objects.get(type=60000).parameter
             JOBVAL = 1
             JOBIGN = 0
 
