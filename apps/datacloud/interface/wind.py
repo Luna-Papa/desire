@@ -11,7 +11,9 @@ application = get_wsgi_application()
 from datacloud.models import ChannelInfo, ChkInfo, SyncTaskInfo, PushTaskInfo, ScriptConfig
 
 if __name__ == '__main__':
-
+    """
+    前端配置表新增记录时，在后端ETL调度表生成相关记录的处理过程。
+    """
     db_conn = get_db_conn('ETL-Database')
     # cur_conn = ibm_db.connect(db_conn, "", "")
 
