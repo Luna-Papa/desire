@@ -33,7 +33,7 @@ if __name__ == '__main__':
     ##########################################
 
     check_info = ChkInfo.objects.filter(val_flag=False, updated_time__date=today)
-    if check_info:
+    if check_info.exists():
         for check in check_info:
             JOBID = check.chk_id
             sql_stmt_check = eval('f' + '"' + get_sql_stmt('SCTJOB') + '"')
@@ -42,7 +42,7 @@ if __name__ == '__main__':
             # 处理关联的同步任务，将其状态标识置为无效，并更新其最后修改时间为当前时点
             check_name = check.chk_name
             related_sync_info = SyncTaskInfo.objects.filter(check_name=check_name)
-            if related_sync_info:
+            if related_sync_info.exists():
                 for sync in related_sync_info:
                     sync.val_flag = False
                     sync.updated_time = datetime.now()
@@ -50,17 +50,18 @@ if __name__ == '__main__':
                     # 处理同步任务关联的推送任务
                     source_tab_name = sync.tab_name
                     related_push_info = PushTaskInfo.objects.filter(source_tab_name=source_tab_name)
-                    for push in related_push_info:
-                        push.val_flag = False
-                        push.updated_time = datetime.now()
-                        push.save()
+                    if related_push_info.exists():
+                        for push in related_push_info:
+                            push.val_flag = False
+                            push.updated_time = datetime.now()
+                            push.save()
 
     ##########################################
     # 处理同步装载任务表
     ##########################################
 
     sync_info = SyncTaskInfo.objects.filter(val_flag=False, updated_time__date=today)
-    if sync_info:
+    if sync_info.exists():
         for sync in sync_info:
             # 需要同时将卸载任务和装载任务都置为无效
             JOBID = sync.sync_id
@@ -73,18 +74,19 @@ if __name__ == '__main__':
             # 处理关联的推送任务，将其状态标识置为无效，并更新其最后修改时间为当前时点
             source_tab_name = sync.tab_name
             related_push_info = PushTaskInfo.objects.filter(source_tab_name=source_tab_name)
-            for push in related_push_info:
-                push.val_flag = False
-                push.updated_time = datetime.now()
-                push.save()
-            # 推送任务的处理全部放在下一部分逻辑
+            if related_push_info.exists():
+                for push in related_push_info:
+                    push.val_flag = False
+                    push.updated_time = datetime.now()
+                    push.save()
+                # 推送任务的处理全部放在下一部分逻辑
 
     ##########################################
     # 处理推送任务表
     ##########################################
 
     push_info = PushTaskInfo.objects.filter(val_flag=False, created_time__date=today)
-    if push_info:
+    if push_info.exists():
         for push in push_info:
             JOBID = push.push_id
             sql_stmt_sync_push = eval('f' + '"' + get_sql_stmt('SCTJOB') + '"')

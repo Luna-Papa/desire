@@ -22,7 +22,7 @@ if __name__ == '__main__':
     ##########################################
 
     channel_info = ChannelInfo.objects.filter(new_record_flag=True)
-    if channel_info:
+    if channel_info.exists():
         """
         渠道配置需要写入调度表 <SCTCHA> 和 <SCTMSG_JOB_REL>
         """
@@ -95,7 +95,7 @@ if __name__ == '__main__':
     ##########################################
 
     chk_info = ChkInfo.objects.filter(new_record_flag=True)
-    if chk_info:
+    if chk_info.exists():
         for chk in chk_info:
             # InitJob所需字段
             ID = chk.chk_id
@@ -155,7 +155,7 @@ if __name__ == '__main__':
     ##########################################
 
     sync_task_info = SyncTaskInfo.objects.filter(new_record_flag=True)
-    if sync_task_info:
+    if sync_task_info.exists():
         for sync_task in sync_task_info:
             # 1、先处理数据同步任务
 
@@ -231,7 +231,7 @@ if __name__ == '__main__':
     ##########################################
 
     push_task_info = PushTaskInfo.objects.filter(new_record_flag=True)
-    if push_task_info:
+    if push_task_info.exists():
         for push_task in push_task_info:
             # InitJob所需字段
             ID = push_task.push_id
