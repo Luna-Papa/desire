@@ -36,7 +36,7 @@ if __name__ == '__main__':
     if check_info:
         for check in check_info:
             JOBID = check.chk_id
-            sql_stmt_check = eval('f' + '"' + get_sql_stmt('SCTHJOB') + '"')
+            sql_stmt_check = eval('f' + '"' + get_sql_stmt('SCTJOB') + '"')
             # ibm_db.exec_immediate(cur_conn, sql_stmt_check)
 
             # 处理关联的同步任务，将其状态标识置为无效，并更新其最后修改时间为当前时点
@@ -64,10 +64,10 @@ if __name__ == '__main__':
         for sync in sync_info:
             # 需要同时将卸载任务和装载任务都置为无效
             JOBID = sync.sync_id
-            sql_stmt = eval('f' + '"' + get_sql_stmt('SCTHJOB') + '"')
+            sql_stmt = eval('f' + '"' + get_sql_stmt('SCTJOB') + '"')
             # ibm_db.exec_immediate(cur_conn, sql_stmt)
             JOBID = sync.load_id
-            sql_stmt_sync = eval('f' + '"' + get_sql_stmt('SCTHJOB') + '"')
+            sql_stmt_sync = eval('f' + '"' + get_sql_stmt('SCTJOB') + '"')
             # ibm_db.exec_immediate(cur_conn, sql_stmt_sync)
 
             # 处理关联的推送任务，将其状态标识置为无效，并更新其最后修改时间为当前时点
@@ -87,5 +87,5 @@ if __name__ == '__main__':
     if push_info:
         for push in push_info:
             JOBID = push.push_id
-            sql_stmt_sync_push = eval('f' + '"' + get_sql_stmt('SCTHJOB') + '"')
+            sql_stmt_sync_push = eval('f' + '"' + get_sql_stmt('SCTJOB') + '"')
             # ibm_db.exec_immediate(cur_conn, sql_stmt_sync_push)
