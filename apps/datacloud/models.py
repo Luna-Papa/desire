@@ -1,4 +1,5 @@
 from django.db import models
+from smart_selects.db_fields import ChainedForeignKey
 
 
 # Create your models here.
@@ -98,7 +99,10 @@ class SyncTaskInfo(models.Model):
 
     db_name = models.ForeignKey(ChannelInfo, on_delete=models.DO_NOTHING, verbose_name='源系统库名')
     tab_name = models.CharField(verbose_name='表名', max_length=128)
-    chk_name = models.ForeignKey(ChkInfo, on_delete=models.DO_NOTHING, verbose_name='检测名称')
+    # chk_name = models.ForeignKey(ChkInfo, on_delete=models.DO_NOTHING, verbose_name='检测名称')
+    chk_name = ChainedForeignKey(ChkInfo, chained_field="db_name", chained_model_field="db_name",
+                                 show_all=False, auto_choose=True, sort=True,
+                                 verbose_name='检测名称')
     exp_method = models.CharField(verbose_name='导出方式', choices=EXP_METHOD_ITEMS,
                                   max_length=10, default='export')
     zl_info = models.CharField(verbose_name='增量标识', choices=(('Z', '增量'), ('Q', '全量')), max_length=1)
