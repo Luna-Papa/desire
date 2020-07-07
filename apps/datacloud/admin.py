@@ -58,6 +58,8 @@ class SyncTaskInfoAdmin(admin.ModelAdmin):
     def save_model(self, request, obj, form, change):
         obj.sync_flag = False
         chn_id = ChannelInfo.objects.get(db_name=obj.db_name).chn_id
+        if obj.out_path.endswith('/'):
+            obj.out_path = obj.out_path[0:-1]
         if not change:
             task_info = SyncTaskInfo.objects.filter(db_name=obj.db_name)
             if task_info:

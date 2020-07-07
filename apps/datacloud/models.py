@@ -1,5 +1,6 @@
 from django.db import models
 from smart_selects.db_fields import ChainedForeignKey
+from django.core.validators import RegexValidator
 
 
 # Create your models here.
@@ -110,7 +111,8 @@ class SyncTaskInfo(models.Model):
     ftp_file = models.CharField(verbose_name='FTP同步条件', max_length=256, null=True, blank=True)
     date_type = models.CharField(verbose_name='数据日期', choices=DATE_TYPE_ITEMS, max_length=4,
                                  default='T+1')
-    out_path = models.CharField(verbose_name='数据导出目录', max_length=128, null=True, blank=True)
+    out_path = models.CharField(verbose_name='数据导出目录', max_length=128, null=True, blank=True,
+                                validators=[RegexValidator("^\/(\w+)+$", message='请输入合法路径！')])
     outfile_type = models.CharField(verbose_name='数据导出格式', max_length=3,
                                     choices=(('ixf', 'IXF'), ('del', 'DEL')))
     load_method = models.CharField(verbose_name='加载方式', max_length=20, choices=LOAD_METHOD_ITEMS)
