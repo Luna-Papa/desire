@@ -53,6 +53,7 @@ class SyncTaskInfoAdmin(admin.ModelAdmin):
     fields = ('db_name', 'chk_name', 'tab_name', 'exp_method', 'zl_info', 'zl_col', 'ftp_file',
               'outfile_type', 'date_type', 'out_path', 'load_method', 'load_tab_tmp',
               'load_tab_mir', 'month_flag', 'backup_flag', 'his_flag', 'val_flag')
+    list_editable = ('val_flag', 'his_flag', 'backup_flag')
 
     def save_model(self, request, obj, form, change):
         obj.sync_flag = False
@@ -68,6 +69,12 @@ class SyncTaskInfoAdmin(admin.ModelAdmin):
                 obj.load_id = chn_id + 30001
             obj.new_record_flag = True
         return super(SyncTaskInfoAdmin, self).save_model(request, obj, form, change)
+
+    def get_readonly_fields(self, request, obj=None):
+        # 修改对象时，源系统名和检测名称不可修改
+        if obj:
+            return self.readonly_fields + ('chk_name', 'db_name', )
+        return self.readonly_fields
 
 
 @admin.register(PushTaskInfo)
