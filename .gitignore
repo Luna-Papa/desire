@@ -1,5 +1,4 @@
 # Created by .ignore support plugin (hsz.mobi)
-.gitignore
 .idea/.gitignore
 .idea/desire.iml
 .idea/inspectionProfiles/
@@ -8,3 +7,11 @@
 venv/
 /apps/datacloud/migrations/
 /db.sqlite3
+/apps/infocenter/migrations/
+.idea/sqldialects.xml
+.idea/vcs.xml
+.idea/workspace.xml
+apps/datacloud/__pycache__/
+apps/datacloud/interface/__pycache__/
+apps/infocenter/__pycache__/
+desire/__pycache__/
