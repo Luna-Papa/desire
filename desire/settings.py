@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'datacloud',  # ETL可视化配置
+    'infocenter',  # 工作中的一些信息展示
     'smart_selects',  # 用于外键字段关联过滤
 ]
 
