@@ -5,15 +5,12 @@ from django.db import models
 
 
 class SoftwareDefect(models.Model):
-    SOFTWARE_TYPE_ITEMS = (
-        (0, '数据库'),
-        (1, '中间件'),
-        (2, '操作系统'),
-        (9, '其它'),
-    )
+    """
+    基础软件缺陷清单及检查结果登记
+    """
 
     find_date = models.CharField(verbose_name='发现日期', max_length=6, help_text='示例：201901')
-    soft_type = models.PositiveSmallIntegerField(verbose_name='软件类型', choices=SOFTWARE_TYPE_ITEMS)
+    soft_type = models.CharField(verbose_name='软件类型', max_length=128)
     edition = models.CharField(verbose_name='型号/版本', max_length=20)
     manufactures = models.CharField(verbose_name='生产厂商', max_length=128)
     describe = models.TextField(verbose_name='缺陷描述')
