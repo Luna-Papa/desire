@@ -6,6 +6,13 @@ from django.core.validators import RegexValidator
 # Create your models here.
 
 
+class DataSyncTypes(models.TextChoices):
+    TYPE_A = 'T+0', 'T+0'
+    TYPE_B = 'T+1', 'T+1'
+    TYPE_C = 'T+2', 'T+2'
+    TYPE_D = 'T+3', 'T+3'
+
+
 class ChannelInfo(models.Model):
     """
     数据源信息表
@@ -40,20 +47,13 @@ class ChkInfo(models.Model):
     条件检测表
     """
 
-    DATE_TYPE_ITEMS = (
-        ('T+0', 'T+0'),
-        ('T+1', 'T+1'),
-        ('T+2', 'T+2'),
-        ('T+3', 'T+3'),
-    )
-
     db_name = models.ForeignKey(ChannelInfo, on_delete=models.DO_NOTHING, verbose_name='源系统库名')
     chk_seq = models.IntegerField(verbose_name='检测条件编号', default=0)
     chk_name = models.CharField(verbose_name='检测名称', max_length=128, unique=True)
     chk_condition = models.CharField(verbose_name='检测条件', max_length=256)
     chk_valid_condition = models.CharField(verbose_name='检测有效条件', max_length=128)
-    date_type = models.CharField(verbose_name='数据日期', choices=DATE_TYPE_ITEMS, max_length=4,
-                                 default='T+1')
+    date_type = models.CharField(verbose_name='数据日期', choices=DataSyncTypes.choices, max_length=4,
+                                 default=DataSyncTypes.TYPE_B)
     memo = models.CharField(verbose_name='备注', max_length=128, null=True, blank=True)
     val_flag = models.BooleanField(verbose_name='有效标识', default=True)
     sync_flag = models.BooleanField(verbose_name='同步标识', default=False)
@@ -91,13 +91,6 @@ class SyncTaskInfo(models.Model):
         ('delete_insert', 'delete_insert'),
     )
 
-    DATE_TYPE_ITEMS = (
-        ('T+0', 'T+0'),
-        ('T+1', 'T+1'),
-        ('T+2', 'T+2'),
-        ('T+3', 'T+3'),
-    )
-
     db_name = models.ForeignKey(ChannelInfo, on_delete=models.DO_NOTHING, verbose_name='源系统库名')
     tab_name = models.CharField(verbose_name='表名', max_length=128)
     # chk_name = models.ForeignKey(ChkInfo, on_delete=models.DO_NOTHING, verbose_name='检测名称')
@@ -109,8 +102,8 @@ class SyncTaskInfo(models.Model):
     zl_info = models.CharField(verbose_name='增量标识', choices=(('Z', '增量'), ('Q', '全量')), max_length=1)
     zl_col = models.CharField(verbose_name='增量同步检测字段', max_length=50, null=True, blank=True)
     ftp_file = models.CharField(verbose_name='FTP同步条件', max_length=256, null=True, blank=True)
-    date_type = models.CharField(verbose_name='数据日期', choices=DATE_TYPE_ITEMS, max_length=4,
-                                 default='T+1')
+    date_type = models.CharField(verbose_name='数据日期', choices=DataSyncTypes.choices, max_length=4,
+                                 default=DataSyncTypes.TYPE_B)
     out_path = models.CharField(verbose_name='数据导出目录', max_length=128, null=True, blank=True,
                                 validators=[RegexValidator("^\/(\w+)+$", message='请输入合法路径！')])
     outfile_type = models.CharField(verbose_name='数据导出格式', max_length=3,
