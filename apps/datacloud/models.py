@@ -35,7 +35,7 @@ class ChannelInfo(models.Model):
     chn_backup_id = models.IntegerField(verbose_name='渠道备份编号', help_text='自动生成的隐藏列', unique=True)
 
     def __str__(self):
-        return self.db_name
+        return self.chn_name
 
     class Meta:
         verbose_name = '数据源'
