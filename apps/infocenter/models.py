@@ -21,7 +21,7 @@ class SoftwareDefect(models.Model):
     suggestion = models.TextField(verbose_name='建议', null=True, blank=True)
 
     def __str__(self):
-        return self.find_date + self.edition + self.describe
+        return f'{self.find_date} {self.edition} {self.describe}'
 
     class Meta:
         verbose_name = '银保监下发基础软件缺陷清单'
