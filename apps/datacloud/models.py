@@ -112,10 +112,12 @@ class SyncTaskInfo(models.Model):
     load_tab_tmp = models.CharField(verbose_name='入库增量表名', max_length=128, null=True, blank=True)
     load_tab_mir = models.CharField(verbose_name='入库全量表名', max_length=128, null=True, blank=True)
     month_flag = models.BooleanField(verbose_name='是否仅保留当月数据', default=False,
-                                     help_text='值为真时仅保留当月数据，每月2号自动清理；值为否时一直保留')
-    his_flag = models.BooleanField(verbose_name='是否入历史中心')
+                                     help_text='勾选后仅保留当月数据，每月2号自动清理；否则一直保留')
+    his_flag = models.BooleanField(verbose_name='是否入历史中心',
+                                   help_text='勾选后每日自动将数据存入历史表')
     val_flag = models.BooleanField(verbose_name='有效标识', default=True)
-    backup_flag = models.BooleanField(verbose_name='备份标识', default=False)
+    backup_flag = models.BooleanField(verbose_name='备份标识', default=False,
+                                      help_text='勾选后每日自动进行备份')
     sync_flag = models.BooleanField(verbose_name='同步标识', default=False)
     new_record_flag = models.BooleanField(verbose_name='是否为新记录', default=True)
     created_time = models.DateTimeField(auto_now_add=True, verbose_name='创建时间')

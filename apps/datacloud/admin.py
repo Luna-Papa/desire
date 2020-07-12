@@ -52,7 +52,7 @@ class SyncTaskInfoAdmin(admin.ModelAdmin):
                     'backup_flag', 'his_flag', 'val_flag')
     fields = ('db_name', 'chk_name', 'tab_name', 'exp_method', 'zl_info', 'zl_col', 'ftp_file',
               'outfile_type', 'date_type', 'out_path', 'load_method', 'load_tab_tmp',
-              'load_tab_mir', 'month_flag', 'backup_flag', 'his_flag', 'val_flag')
+              'load_tab_mir', 'month_flag', 'backup_flag', 'his_flag')
     list_editable = ('val_flag', 'his_flag', 'backup_flag')
 
     def save_model(self, request, obj, form, change):
