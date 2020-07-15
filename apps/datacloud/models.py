@@ -25,14 +25,18 @@ class ChannelInfo(models.Model):
     code_page = models.CharField(verbose_name='字符集', max_length=10)
     username = models.CharField(verbose_name='用户名', max_length=50)
     password = models.CharField(verbose_name='密码', max_length=50)
+    chn_start_time = models.CharField(verbose_name='渠道加载时间', max_length=5,
+                                      help_text='请输入整点或整半点时间，如：01:00、01:30',
+                                      validators=[RegexValidator("[0-2][0-3]:[0,3]0",
+                                                                 message='请输入整点或整半点时间，如：01:00、01:30！')])
     val_flag = models.BooleanField(verbose_name='有效标识', default=True)
     sync_flag = models.BooleanField(verbose_name='同步标识', default=False)
     new_record_flag = models.BooleanField(verbose_name='是否为新记录', default=True)
     created_time = models.DateTimeField(auto_now_add=True, verbose_name='创建时间')
     updated_time = models.DateTimeField(auto_now=True, verbose_name='上次修改时间')
-    chn_id = models.IntegerField(verbose_name='渠道编号', help_text='自动生成的隐藏列', unique=True)
-    # chn_done_id = models.IntegerField(verbose_name='渠道完成编号', help_text='自动生成的隐藏列', unique=True)
-    chn_backup_id = models.IntegerField(verbose_name='渠道备份编号', help_text='自动生成的隐藏列', unique=True)
+    # id字段用于生成后端ETL的作业编号，前台不可见
+    chn_id = models.IntegerField(verbose_name='渠道编号', unique=True)
+    chn_backup_id = models.IntegerField(verbose_name='渠道备份编号', unique=True)
 
     def __str__(self):
         return self.chn_name

@@ -7,8 +7,8 @@ from django.db.models import Max, Count
 
 @admin.register(ChannelInfo)
 class ChannelInfoAdmin(admin.ModelAdmin):
-    list_display = ('sys_name', 'chn_name', 'db_name', 'address', 'created_time', 'sync_flag')
-    fields = ('sys_name', 'chn_name', 'db_name', 'address', 'port', 'code_page', 'username', 'password')
+    list_display = ('sys_name', 'chn_name', 'db_name', 'address', 'chn_start_time', 'created_time', 'sync_flag')
+    fields = ('sys_name', 'chn_name', 'db_name', 'address', 'port', 'code_page', 'username', 'password', 'chn_start_time')
 
     def save_model(self, request, obj, form, change):
         obj.sync_flag = False

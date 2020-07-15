@@ -36,7 +36,9 @@ if __name__ == "__main__":
             ip = sync_row.address
             port = sync_row.port
             codepage = sync_row.code_page
-            khd_init = ''
+            cha_no = sync_row.chn_id
+            start_time = sync_row.chn_start_time
+            # khd_init = ''
             record_date = datetime.now().strftime('%Y-%m-%d')
 
             # 拼装并执行DB2 SQL语句
