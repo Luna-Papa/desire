@@ -44,6 +44,7 @@ class ChannelInfo(models.Model):
     class Meta:
         verbose_name = '数据源'
         verbose_name_plural = verbose_name
+        ordering = ['chn_id']
 
 
 class ChkInfo(models.Model):
@@ -51,7 +52,7 @@ class ChkInfo(models.Model):
     条件检测表
     """
 
-    db_name = models.ForeignKey(ChannelInfo, on_delete=models.DO_NOTHING, verbose_name='源系统库名')
+    chn_name = models.ForeignKey(ChannelInfo, on_delete=models.DO_NOTHING, verbose_name='源系统名')
     chk_seq = models.IntegerField(verbose_name='检测条件编号', default=0)
     chk_name = models.CharField(verbose_name='检测名称', max_length=128, unique=True)
     chk_condition = models.CharField(verbose_name='检测条件', max_length=256)
@@ -73,6 +74,7 @@ class ChkInfo(models.Model):
     class Meta:
         verbose_name = '检测条件'
         verbose_name_plural = verbose_name
+        ordering = ['chk_id']
 
 
 class SyncTaskInfo(models.Model):
@@ -95,10 +97,10 @@ class SyncTaskInfo(models.Model):
         ('delete_insert', 'delete_insert'),
     )
 
-    db_name = models.ForeignKey(ChannelInfo, on_delete=models.DO_NOTHING, verbose_name='源系统库名')
+    chn_name = models.ForeignKey(ChannelInfo, on_delete=models.DO_NOTHING, verbose_name='源系统名')
     tab_name = models.CharField(verbose_name='表名', max_length=128)
     # chk_name = models.ForeignKey(ChkInfo, on_delete=models.DO_NOTHING, verbose_name='检测名称')
-    chk_name = ChainedForeignKey(ChkInfo, chained_field="db_name", chained_model_field="db_name",
+    chk_name = ChainedForeignKey(ChkInfo, chained_field="chn_name", chained_model_field="chn_name",
                                  show_all=False, auto_choose=True, sort=True,
                                  verbose_name='检测名称')
     exp_method = models.CharField(verbose_name='导出方式', choices=EXP_METHOD_ITEMS,
@@ -143,7 +145,7 @@ class PushTaskInfo(models.Model):
     """
     数据推送任务信息表
     """
-    db_name = models.ForeignKey(ChannelInfo, on_delete=models.DO_NOTHING, verbose_name='源系统库名')
+    chn_name = models.ForeignKey(ChannelInfo, on_delete=models.DO_NOTHING, verbose_name='源系统名')
     source_tab_name = models.ForeignKey(SyncTaskInfo, on_delete=models.DO_NOTHING, verbose_name='源系统表名')
     # db_name = models.ForeignKey(ChannelInfo, on_delete=models.DO_NOTHING, verbose_name='源系统库名')
     push_tab_name = models.CharField(verbose_name='表名', max_length=128,
@@ -162,7 +164,7 @@ class PushTaskInfo(models.Model):
     new_record_flag = models.BooleanField(verbose_name='是否为新记录', default=True)
     created_time = models.DateTimeField(auto_now_add=True, verbose_name='创建时间')
     updated_time = models.DateTimeField(auto_now=True, verbose_name='上次修改时间')
-    push_id = models.IntegerField(default=100000, verbose_name='数据推送编号', help_text='自动生成的隐藏列')
+    push_id = models.IntegerField(default=100000, verbose_name='数据推送编号')
 
     def __str__(self):
         return self.push_tab_name
