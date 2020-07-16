@@ -1,7 +1,6 @@
 import os
 from django.core.wsgi import get_wsgi_application
 from datetime import datetime
-import ibm_db
 from datacloud.interface.tools import get_db_conn, get_sql_stmt
 
 # 加载django项目环境参数
@@ -15,8 +14,9 @@ if __name__ == '__main__':
     """
     前端配置表新增记录时，在后端ETL调度表生成相关记录的处理过程。
     """
-    db_conn = get_db_conn('ETL-Database')
-    # cur_conn = ibm_db.connect(db_conn, "", "")
+
+    # 取数据库游标
+    curr = get_db_conn('ETL-Database')
 
     ##########################################
     # 处理渠道配置表
@@ -48,6 +48,8 @@ if __name__ == '__main__':
             # 执行DB2 SQL语句
             # ibm_db.exec_immediate(cur_conn, chn_sql_cha)
             # ibm_db.exec_immediate(cur_conn, chn_sql_rel)
+            curr.execute(chn_sql_cha)
+            curr.execute(chn_sql_rel)
 
             # 生成渠道首作业信息
             ID = chn.chn_id + 1
@@ -65,6 +67,7 @@ if __name__ == '__main__':
 
             chn_sql_init_begin = eval('f' + '"' + get_sql_stmt('INIT_JOB') + '"')
             # ibm_db.exec_immediate(cur_conn, chn_sql_init_begin)
+            curr.execute(chn_sql_init_begin)
 
             """
             一个渠道对应一个备份作业，此处需要将备份作业的相关信息生成到InitJob，
@@ -87,10 +90,11 @@ if __name__ == '__main__':
 
             chn_sql_init_back = eval('f' + '"' + get_sql_stmt('INIT_JOB') + '"')
             # ibm_db.exec_immediate(cur_conn, chn_sql_init_back)
+            curr.execute(chn_sql_init_back)
 
             # 执行完成后，将该条记录的新增记录标识为否
-            # chn.new_record_flag = False
-            # chn.save()
+            chn.new_record_flag = False
+            chn.save()
 
     ##########################################
     # 处理渠道检测配置表
@@ -123,13 +127,15 @@ if __name__ == '__main__':
             chk_sql2 = eval('f' + '"' + get_sql_stmt('SCTFLW') + '"')  # 依赖关系：渠道首作业 -> 检测
 
             # 执行DB2 SQL语句
+            curr.execute(chk_sql1)
+            curr.execute(chk_sql2)
             # ibm_db.exec_immediate(cur_conn, chk_sql1)
             # ibm_db.exec_immediate(cur_conn, chk_sql2)
 
             # 生成渠道完成作业信息
             ID = chk.chk_done_id
             JOBTYPE = 1
-            JOBCNM = f'数据检测-{chk.chk_name}-完成'
+            JOBCNM = f'渠道-{chk.chk_name}-完成'
             JOBID = chk.chk_done_id
             JOBPRI = 1
             STGID = 40000
@@ -142,17 +148,47 @@ if __name__ == '__main__':
             JOBIGN = 0
 
             chk_sql3 = eval('f' + '"' + get_sql_stmt('INIT_JOB') + '"')
+            curr.execute(chk_sql3)
             # ibm_db.exec_immediate(cur_conn, chk_sql3)
 
             # 生成渠道完成作业与备份作业的依赖关系
             FLWJOB = chk.chn_name.chn_backup_id
             FLWPRO = chk.chk_done_id
+
             chk_sql4 = eval('f' + '"' + get_sql_stmt('SCTFLW') + '"')  # 依赖关系：渠道完成作业 -> 备份
+            curr.execute(chk_sql4)
             # ibm_db.exec_immediate(cur_conn, chk_sql4)
 
+            # 生成渠道完成通知短信作业信息
+            ID = chk.chk_done_id + 50000  # 备份作业号是90000开头
+            JOBTYPE = 1
+            JOBCNM = f'{chk.chk_name}-完成-短信通知'
+            JOBID = chk.chk_done_id
+            JOBPRI = 1
+            STGID = 90000
+            CHAID = chk.chk_done_id + 50000
+            JOBCYC = 'D'
+            APPURL = ScriptConfig.objects.get(type=90000).script
+            # 渠道完成作业参数为空
+            PARAM = f'{chk.chk_name}-任务完成'
+            JOBVAL = 1
+            JOBIGN = 0
+
+            chk_sql5 = eval('f' + '"' + get_sql_stmt('INIT_JOB') + '"')
+            curr.execute(chk_sql5)
+            # ibm_db.exec_immediate(cur_conn, chk_sql5)
+
+            # 生成渠道完成作业与短信通知作业的依赖关系
+            FLWJOB = chk.chk_done_id + 50000
+            FLWPRO = chk.chk_done_id
+
+            chk_sql6 = eval('f' + '"' + get_sql_stmt('SCTFLW') + '"')  # 依赖关系：渠道完成作业 -> 短信通知作业
+            curr.execute(chk_sql6)
+            # ibm_db.exec_immediate(cur_conn, chk_sql6)
+
             # 执行完成后，将该条记录的新增记录标识为否
-            # chk.new_record_flag = False
-            # chk.save()
+            chk.new_record_flag = False
+            chk.save()
 
     ##########################################
     # 处理数据同步卸载任务表
@@ -187,6 +223,8 @@ if __name__ == '__main__':
             sync_task_sql2 = eval('f' + '"' + get_sql_stmt('SCTFLW') + '"')  # 依赖关系：检测 -> 卸载
 
             # 执行DB2 SQL语句
+            curr.execute(sync_task_sql1)
+            curr.execute(sync_task_sql2)
             # ibm_db.exec_immediate(cur_conn, sync_task_sql1)
             # ibm_db.exec_immediate(cur_conn, sync_task_sql2)
 
@@ -199,7 +237,7 @@ if __name__ == '__main__':
             JOBID = sync_task.load_id
             JOBPRI = 1
             STGID = 30000
-            CHAID = sync_task.db_name.chn_id
+            CHAID = sync_task.chn_name.chn_id
             JOBCYC = 'D'
             APPURL = ScriptConfig.objects.get(type=30000).script
             # 数据装载类任务参数为数据库名+源系统表名
@@ -216,6 +254,8 @@ if __name__ == '__main__':
             load_task_sql2 = eval('f' + '"' + get_sql_stmt('SCTFLW') + '"')  # 依赖关系：卸载 -> 装载
 
             # 执行DB2 SQL语句
+            curr.execute(load_task_sql1)
+            curr.execute(load_task_sql2)
             # ibm_db.exec_immediate(cur_conn, load_task_sql1)
             # ibm_db.exec_immediate(cur_conn, load_task_sql2)
 
@@ -226,11 +266,12 @@ if __name__ == '__main__':
             FLWPRO = sync_task.load_id
 
             load_task_sql3 = eval('f' + '"' + get_sql_stmt('SCTFLW') + '"')  # 依赖关系：装载 -> 渠道完成
+            curr.execute(load_task_sql3)
             # ibm_db.exec_immediate(cur_conn, load_task_sql3)
 
             # 执行完成后，将该条记录的新增记录标识为否
-            # sync_task.new_record_flag = False
-            # sync_task.save()
+            sync_task.new_record_flag = False
+            sync_task.save()
 
     ##########################################
     # 处理数据推送任务表
@@ -263,9 +304,11 @@ if __name__ == '__main__':
             push_task_sql2 = eval('f' + '"' + get_sql_stmt('SCTFLW') + '"')  # 依赖关系：渠道检测完成 -> 推送
 
             # 执行DB2 SQL语句
+            curr.execute(push_task_sql1)
+            curr.execute(push_task_sql2)
             # ibm_db.exec_immediate(cur_conn, push_task_sql1)
             # ibm_db.exec_immediate(cur_conn, push_task_sql2)
 
             # 执行完成后，将该条记录的新增记录标识为否
-            # push_task.new_record_flag = False
-            # push_task.save()
+            push_task.new_record_flag = False
+            push_task.save()

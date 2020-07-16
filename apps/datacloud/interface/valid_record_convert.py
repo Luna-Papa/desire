@@ -15,8 +15,9 @@ if __name__ == '__main__':
     前端配置表中检测任务、同步加载任务或者推送任务置为无效时，
     在后端ETL调度表进行变更的处理过程。
     """
-    db_conn = get_db_conn('ETL-Database')
-    # cur_conn = ibm_db.connect(db_conn, "", "")
+
+    # 取数据库游标
+    curr = get_db_conn('ETL-Database')
 
     ##########################################
     # 处理渠道配置表
@@ -37,6 +38,7 @@ if __name__ == '__main__':
         for check in check_info:
             JOBID = check.chk_id
             sql_stmt_check = eval('f' + '"' + get_sql_stmt('SCTJOB') + '"')
+            curr.execute(sql_stmt_check)
             # ibm_db.exec_immediate(cur_conn, sql_stmt_check)
 
             # 处理关联的同步任务，将其状态标识置为无效，并更新其最后修改时间为当前时点
@@ -66,9 +68,11 @@ if __name__ == '__main__':
             # 需要同时将卸载任务和装载任务都置为无效
             JOBID = sync.sync_id
             sql_stmt = eval('f' + '"' + get_sql_stmt('SCTJOB') + '"')
+            curr.execute(sql_stmt)
             # ibm_db.exec_immediate(cur_conn, sql_stmt)
             JOBID = sync.load_id
             sql_stmt_sync = eval('f' + '"' + get_sql_stmt('SCTJOB') + '"')
+            curr.execute(sql_stmt_sync)
             # ibm_db.exec_immediate(cur_conn, sql_stmt_sync)
 
             # 处理关联的推送任务，将其状态标识置为无效，并更新其最后修改时间为当前时点
@@ -90,4 +94,5 @@ if __name__ == '__main__':
         for push in push_info:
             JOBID = push.push_id
             sql_stmt_sync_push = eval('f' + '"' + get_sql_stmt('SCTJOB') + '"')
+            curr.execute(sql_stmt_sync_push)
             # ibm_db.exec_immediate(cur_conn, sql_stmt_sync_push)

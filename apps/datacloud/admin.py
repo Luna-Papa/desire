@@ -49,10 +49,10 @@ class ChkInfoAdmin(admin.ModelAdmin):
 @admin.register(SyncTaskInfo)
 class SyncTaskInfoAdmin(admin.ModelAdmin):
     list_display = ('chn_name', 'chk_name', 'tab_name', 'exp_method', 'zl_info', 'outfile_type',
-                    'backup_flag', 'his_flag', 'val_flag')
+                    'backup_flag', 'his_flag', 'his_frequency', 'val_flag', 'sync_flag')
     fields = ('chn_name', 'chk_name', 'tab_name', 'exp_method', 'zl_info', 'zl_col', 'ftp_file',
               'outfile_type', 'date_type', 'out_path', 'load_method', 'load_tab_tmp',
-              'load_tab_mir', 'month_flag', 'backup_flag', 'his_flag')
+              'load_tab_mir', 'month_flag', 'backup_flag', 'his_flag', 'his_frequency')
     list_editable = ('val_flag', 'his_flag', 'backup_flag')
 
     def save_model(self, request, obj, form, change):
@@ -81,8 +81,10 @@ class SyncTaskInfoAdmin(admin.ModelAdmin):
 
 @admin.register(PushTaskInfo)
 class PushTaskInfoAdmin(admin.ModelAdmin):
-    list_display = ('chn_name', 'source_tab_name', 'push_tab_name', 'file_type', 'code_page', 'path', 'val_flag')
-    fields = ('source_tab_name', 'push_tab_name', 'path', 'file_type', 'code_page', 'separator', 'delimiter', 'val_flag')
+    list_display = ('chn_name', 'source_tab_name', 'push_tab_name', 'file_type',
+                    'code_page', 'path', 'val_flag', 'sync_flag')
+    fields = ('source_tab_name', 'push_tab_name', 'path', 'file_type', 'code_page',
+              'separator', 'delimiter', 'val_flag')
 
     def save_model(self, request, obj, form, change):
         obj.sync_flag = False

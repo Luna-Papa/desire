@@ -121,6 +121,9 @@ class SyncTaskInfo(models.Model):
                                      help_text='勾选后仅保留当月数据，每月2号自动清理；否则一直保留')
     his_flag = models.BooleanField(verbose_name='是否入历史中心',
                                    help_text='勾选后每日自动将数据存入历史表')
+    his_frequency = models.CharField(verbose_name='入历史频次', max_length=1, help_text='请输入M（月）或D（天）',
+                                     null=True, blank=True,
+                                     validators=[RegexValidator("M|D", message='只能输入M或D')])
     val_flag = models.BooleanField(verbose_name='有效标识', default=True)
     backup_flag = models.BooleanField(verbose_name='备份标识', default=False,
                                       help_text='勾选后每日自动进行备份')
@@ -148,7 +151,7 @@ class PushTaskInfo(models.Model):
     chn_name = models.ForeignKey(ChannelInfo, on_delete=models.DO_NOTHING, verbose_name='源系统名')
     source_tab_name = models.ForeignKey(SyncTaskInfo, on_delete=models.DO_NOTHING, verbose_name='源系统表名')
     # db_name = models.ForeignKey(ChannelInfo, on_delete=models.DO_NOTHING, verbose_name='源系统库名')
-    push_tab_name = models.CharField(verbose_name='表名', max_length=128,
+    push_tab_name = models.CharField(verbose_name='推送表名', max_length=128,
                                      help_text='实际存储表名，非上游源系统表名')
     path = models.CharField(verbose_name='推送目录', max_length=128)
     file_type = models.CharField(verbose_name='导出文件格式', max_length=3,
