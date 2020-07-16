@@ -10,6 +10,7 @@ application = get_wsgi_application()
 
 from datacloud.models import ChannelInfo, ChkInfo, SyncTaskInfo, PushTaskInfo, ScriptConfig
 
+
 if __name__ == '__main__':
     """
     前端配置表新增记录时，在后端ETL调度表生成相关记录的处理过程。
@@ -79,7 +80,8 @@ if __name__ == '__main__':
             CHAID = chn.chn_id
             JOBCYC = 'D'
             APPURL = ScriptConfig.objects.get(type=50000).script
-            PARAM = ScriptConfig.objects.get(type=50000).parameter
+            # 备份作业参数为渠道名称
+            PARAM = chn.sys_name
             JOBVAL = 1
             JOBIGN = 0
 
@@ -104,16 +106,17 @@ if __name__ == '__main__':
             JOBID = chk.chk_id
             JOBPRI = 1
             STGID = 10000
-            CHAID = chk.db_name.chn_id
+            CHAID = chk.chn_name.chn_id
             JOBCYC = 'D'
             APPURL = ScriptConfig.objects.get(type=10000).script
-            PARAM = ScriptConfig.objects.get(type=10000).parameter
+            # 数据检测类任务参数为db_name
+            PARAM = chk.chn_name.db_name
             JOBVAL = 1
             JOBIGN = 0
 
             # SCTFLW所需字段
             FLWJOB = chk.chk_id
-            FLWPRO = chk.db_name.chn_id + 1
+            FLWPRO = chk.chn_name.chn_id + 1
 
             # 拼接DB2 SQL语句
             chk_sql1 = eval('f' + '"' + get_sql_stmt('INIT_JOB') + '"')
@@ -130,10 +133,11 @@ if __name__ == '__main__':
             JOBID = chk.chk_done_id
             JOBPRI = 1
             STGID = 40000
-            CHAID = chk.db_name.chn_id
+            CHAID = chk.chn_name.chn_id
             JOBCYC = 'D'
             APPURL = ScriptConfig.objects.get(type=40000).script
-            PARAM = ScriptConfig.objects.get(type=40000).parameter
+            # 渠道完成作业参数为空
+            PARAM = ''
             JOBVAL = 1
             JOBIGN = 0
 
@@ -141,7 +145,7 @@ if __name__ == '__main__':
             # ibm_db.exec_immediate(cur_conn, chk_sql3)
 
             # 生成渠道完成作业与备份作业的依赖关系
-            FLWJOB = chk.db_name.chn_backup_id
+            FLWJOB = chk.chn_name.chn_backup_id
             FLWPRO = chk.chk_done_id
             chk_sql4 = eval('f' + '"' + get_sql_stmt('SCTFLW') + '"')  # 依赖关系：渠道完成作业 -> 备份
             # ibm_db.exec_immediate(cur_conn, chk_sql4)
@@ -162,14 +166,15 @@ if __name__ == '__main__':
             # InitJob所需字段
             ID = sync_task.sync_id
             JOBTYPE = 1
-            JOBCNM = f'数据卸载-{sync_task.db_name.chn_name}-{sync_task.tab_name}'
+            JOBCNM = f'数据卸载-{sync_task.chn_name}-{sync_task.tab_name}'
             JOBID = sync_task.sync_id
             JOBPRI = 1
             STGID = 20000
-            CHAID = sync_task.db_name.chn_id
+            CHAID = sync_task.chn_name.chn_id
             JOBCYC = 'D'
             APPURL = ScriptConfig.objects.get(type=20000).script
-            PARAM = ScriptConfig.objects.get(type=20000).parameter
+            # 数据卸载类任务参数为数据库名+源系统表名
+            PARAM = sync_task.chn_name.db_name + ' ' + sync_task.tab_name
             JOBVAL = 1
             JOBIGN = 0
 
@@ -190,14 +195,15 @@ if __name__ == '__main__':
             # InitJob所需字段
             ID = sync_task.load_id
             JOBTYPE = 1
-            JOBCNM = f'数据装载-{sync_task.db_name.chn_name}-{sync_task.tab_name}'
+            JOBCNM = f'数据装载-{sync_task.chn_name}-{sync_task.tab_name}'
             JOBID = sync_task.load_id
             JOBPRI = 1
             STGID = 30000
             CHAID = sync_task.db_name.chn_id
             JOBCYC = 'D'
             APPURL = ScriptConfig.objects.get(type=30000).script
-            PARAM = ScriptConfig.objects.get(type=30000).parameter
+            # 数据装载类任务参数为数据库名+源系统表名
+            PARAM = sync_task.chn_name.db_name + ' ' + sync_task.tab_name
             JOBVAL = 1
             JOBIGN = 0
 
@@ -236,14 +242,15 @@ if __name__ == '__main__':
             # InitJob所需字段
             ID = push_task.push_id
             JOBTYPE = 1
-            JOBCNM = f'数据推送-{push_task.db_name.chn_name}-{push_task.push_tab_name}'
+            JOBCNM = f'数据推送-{push_task.chn_name}-{push_task.push_tab_name}'
             JOBID = push_task.push_id
             JOBPRI = 1
             STGID = 60000
-            CHAID = push_task.db_name.chn_id
+            CHAID = push_task.chn_name.chn_id
             JOBCYC = 'D'
             APPURL = ScriptConfig.objects.get(type=60000).script
-            PARAM = ScriptConfig.objects.get(type=60000).parameter
+            # 数据推送类任务参数为表名
+            PARAM = push_task.push_tab_name
             JOBVAL = 1
             JOBIGN = 0
 

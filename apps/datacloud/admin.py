@@ -101,5 +101,5 @@ class PushTaskInfoAdmin(admin.ModelAdmin):
 
 @admin.register(ScriptConfig)
 class ScriptConfigAdmin(admin.ModelAdmin):
-    list_display = ('type', 'script', 'parameter')
-    fields = ('type', 'script', 'parameter')
+    list_display = ('type', 'type_name', 'script', 'parameter')
+    fields = ('type', 'type_name', 'script', 'parameter')

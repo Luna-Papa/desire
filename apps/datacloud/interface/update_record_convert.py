@@ -59,7 +59,7 @@ if __name__ == "__main__":
 
     sync_rows = ChkInfo.objects.filter(sync_flag=False)  # 待同步记录
     for sync_row in sync_rows:
-        dbname = sync_row.db_name
+        dbname = sync_row.chn_name.db_name
         chk_id = sync_row.chk_id
         chk_flag = sync_row.chk_condition
         chk_name = sync_row.chk_name
@@ -87,7 +87,7 @@ if __name__ == "__main__":
 
     sync_rows = SyncTaskInfo.objects.filter(sync_flag=False)  # 待同步记录
     for sync_row in sync_rows:
-        dbname = sync_row.db_name
+        dbname = sync_row.chn_name.db_name
         tabname = sync_row.tab_name
         exp_method = sync_row.exp_method
         zq_info = sync_row.zl_info
@@ -101,7 +101,7 @@ if __name__ == "__main__":
         local_tab_mir = sync_row.load_tab_mir
         month_flag = sync_row.month_flag
         his_flag = sync_row.his_flag
-        channel = sync_row.db_name.sys_name
+        channel = sync_row.chn_name.sys_name
         bak_flag = sync_row.backup_flag
         val_flag = sync_row.val_flag
         record_date = datetime.now().strftime('%Y-%m-%d')

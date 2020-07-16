@@ -179,12 +179,15 @@ class ScriptConfig(models.Model):
     后台SHELL脚本配置表
     """
     type = models.IntegerField(verbose_name='类别编号', unique=True)
-    script = models.CharField(verbose_name='shell脚本配置', max_length=200)
-    parameter = models.CharField(verbose_name='脚本传入参数', max_length=200, help_text='多个参数以空格分隔')
+    type_name = models.CharField(verbose_name='任务类型名称', max_length=128, unique=True)
+    script = models.CharField(verbose_name='shell脚本配置', max_length=200, unique=True)
+    parameter = models.CharField(verbose_name='脚本传入参数', max_length=200, null=True, blank=True,
+                                 help_text='多个参数以空格分隔')
 
     def __str__(self):
-        return self.script
+        return self.type_name
 
     class Meta:
         verbose_name = '分类任务脚本配置'
         verbose_name_plural = verbose_name
+        ordering = ['type']
