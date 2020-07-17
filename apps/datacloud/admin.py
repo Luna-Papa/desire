@@ -104,9 +104,9 @@ class PushTaskInfoAdmin(admin.ModelAdmin):
         chn_id = ChannelInfo.objects.get(chn_name=obj.chn_name).chn_id
         if obj.push_type == 'TMP':
             if obj.source_tab_name.increment_flag:
-                obj.push_tab_name = obj.source_tab_name.load_tab_tmp
+                obj.push_tab_name = 'ARES.' + obj.source_tab_name.load_tab_tmp
         elif obj.push_type == 'MIR':
-            obj.push_tab_name = obj.source_tab_name.load_tab_mir
+            obj.push_tab_name = 'ARES.' + obj.source_tab_name.load_tab_mir
         if not change:
             task_info = PushTaskInfo.objects.filter(chn_name=obj.chn_name)
             if task_info:
