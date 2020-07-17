@@ -1,6 +1,7 @@
 from django.db import models
 from smart_selects.db_fields import ChainedForeignKey
 from django.core.validators import RegexValidator
+from django.core.exceptions import ValidationError
 
 
 # Create your models here.
@@ -98,7 +99,7 @@ class SyncTaskInfo(models.Model):
     )
 
     chn_name = models.ForeignKey(ChannelInfo, on_delete=models.DO_NOTHING, verbose_name='源系统名')
-    tab_name = models.CharField(verbose_name='表名', max_length=128)
+    tab_name = models.CharField(verbose_name='源系统表名', max_length=128)
     # chk_name = models.ForeignKey(ChkInfo, on_delete=models.DO_NOTHING, verbose_name='检测名称')
     chk_name = ChainedForeignKey(ChkInfo, chained_field="chn_name", chained_model_field="chn_name",
                                  show_all=False, auto_choose=True, sort=True,
@@ -115,6 +116,7 @@ class SyncTaskInfo(models.Model):
     outfile_type = models.CharField(verbose_name='数据导出格式', max_length=3,
                                     choices=(('ixf', 'IXF'), ('del', 'DEL')))
     load_method = models.CharField(verbose_name='加载方式', max_length=20, choices=LOAD_METHOD_ITEMS)
+    increment_flag = models.BooleanField(verbose_name='是否入增量', default=True)
     load_tab_tmp = models.CharField(verbose_name='入库增量表名', max_length=128, null=True, blank=True)
     load_tab_mir = models.CharField(verbose_name='入库全量表名', max_length=128, null=True, blank=True)
     month_flag = models.BooleanField(verbose_name='是否仅保留当月数据', default=False,
@@ -151,8 +153,9 @@ class PushTaskInfo(models.Model):
     chn_name = models.ForeignKey(ChannelInfo, on_delete=models.DO_NOTHING, verbose_name='源系统名')
     source_tab_name = models.ForeignKey(SyncTaskInfo, on_delete=models.DO_NOTHING, verbose_name='源系统表名')
     # db_name = models.ForeignKey(ChannelInfo, on_delete=models.DO_NOTHING, verbose_name='源系统库名')
-    push_tab_name = models.CharField(verbose_name='推送表名', max_length=128,
-                                     help_text='实际存储表名，非上游源系统表名')
+    push_type = models.CharField(verbose_name='推送类型', choices=(('TMP', '增量表'), ('MIR', '全量表')),
+                                 default='TMP', max_length=3)
+    push_tab_name = models.CharField(verbose_name='推送表名', max_length=128)
     path = models.CharField(verbose_name='推送目录', max_length=128)
     file_type = models.CharField(verbose_name='导出文件格式', max_length=3,
                                  choices=(('ixf', 'ixf'), ('txt', 'txt')))
@@ -171,6 +174,10 @@ class PushTaskInfo(models.Model):
 
     def __str__(self):
         return self.push_tab_name
+
+    def clean(self):
+        if self.push_type == "TMP" and not self.source_tab_name.increment_flag:
+            raise ValidationError({'push_type': '该表未配置入增量！'})
 
     class Meta:
         verbose_name = '数据推送任务'

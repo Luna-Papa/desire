@@ -139,3 +139,7 @@ STATICFILES_DIRS = (
 INTERFACE_DIR = (
     os.path.join(BASE_DIR, 'apps', 'datacloud', 'interface')
 )
+
+# By default, smart_selects loads jQuery from Google’s CDN.
+# However, it can use jQuery from Django’s admin area.
+USE_DJANGO_JQUERY = True

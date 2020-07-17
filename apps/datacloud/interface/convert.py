@@ -1,13 +1,17 @@
-from .DB2 import Dd2ExecuteSQL
+import os
+from desire.settings import INTERFACE_DIR
 
+if __name__ == "__main__":
+    """
+    刷新后台调度总控脚本
+    """
+    command1 = os.path.join(INTERFACE_DIR, 'new_record_convert.py')
+    command2 = os.path.join(INTERFACE_DIR, 'update_record_convert.py')
+    command3 = os.path.join(INTERFACE_DIR, 'valid_record_convert.py')
+    command4 = os.path.join(INTERFACE_DIR, 'initialize.py')
 
-def convert(sql1, sql2):
-    pre = Dd2ExecuteSQL()
-    try:
-        pre.execute(sql1)
-    except Exception as ex:
-        print(ex)
-    finally:
-        pre.execute(sql2)
-        pre.close_connection()
-        return True
+    os.system(eval('f' + '"' + 'python {command1}' + '"'))
+    os.system(eval('f' + '"' + 'python {command2}' + '"'))
+    os.system(eval('f' + '"' + 'python {command3}' + '"'))
+    os.system(eval('f' + '"' + 'python {command4}' + '"'))
+

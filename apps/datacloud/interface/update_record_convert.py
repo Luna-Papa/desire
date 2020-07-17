@@ -106,7 +106,7 @@ if __name__ == "__main__":
         outfile_type = sync_row.outfile_type
         load_method = sync_row.load_method
         local_tab_tmp = '' if sync_row.load_tab_tmp is None else sync_row.load_tab_tmp
-        local_tab_mir = '' if sync_row.local_tab_mir is None else sync_row.local_tab_mir
+        local_tab_mir = '' if sync_row.load_tab_mir is None else sync_row.load_tab_mir
         month_flag = int(sync_row.month_flag)
         his_flag = int(sync_row.his_flag)
         his_cyc = '' if sync_row.his_frequency is None else sync_row.his_frequency

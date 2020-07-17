@@ -106,7 +106,7 @@ if __name__ == '__main__':
             # InitJob所需字段
             ID = chk.chk_id
             JOBTYPE = 1
-            JOBCNM = chk.chk_name
+            JOBCNM = f'渠道检测-{chk.chk_name}'
             JOBID = chk.chk_id
             JOBPRI = 1
             STGID = 10000

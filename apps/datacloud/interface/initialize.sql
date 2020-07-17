@@ -8,7 +8,7 @@ insert into odsuser.ODM_ETL_JOB_PARAM (jobid,paramname,paramvalue) select id,'sy
 insert into odsuser.ODM_ETL_JOB_PARAM (jobid,paramname,paramvalue) (select id,'params','appUrl='||appUrl||';param='||param from odsuser.init_job);
 insert into odsuser.ODM_ETL_JOB_PARAM (jobid,paramname,paramvalue) (select id,'appUrl',appUrl from odsuser.init_job);
 insert into odsuser.ODM_ETL_JOB_PARAM (jobid,paramname,paramvalue) (select id,'param',param from odsuser.init_job);
-delete from odsuser.ODM_JOBPARAM_ATTRIBUTEwhere id in (SELECT id job_name from odsuser.init_job) and preference_id='其他' and param_name='appUrl';
+delete from odsuser.ODM_JOBPARAM_ATTRIBUTE where id in (SELECT id job_name from odsuser.init_job) and preference_id='其他' and param_name='appUrl';
 delete from odsuser.ODM_JOBPARAM_ATTRIBUTE where id in (SELECT id job_name from odsuser.init_job) and preference_id='其他' and param_name='param';
 INSERT INTO odsuser.ODM_JOBPARAM_ATTRIBUTE(id,preference_id,param_name,param_value,param_desc,categ_id) SELECT ID,'其他','appUrl',appUrl,'程序路径',81 from odsuser.init_job;
 INSERT INTO odsuser.ODM_JOBPARAM_ATTRIBUTE(id,preference_id,param_name,param_value,param_desc,categ_id) SELECT ID,'其他','param',param,'param',81 from odsuser.init_job;
