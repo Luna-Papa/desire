@@ -33,7 +33,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
-    # 'simpleui',
+    'simpleui',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -148,7 +148,7 @@ INTERFACE_DIR = (
 # By default, smart_selects loads jQuery from Google’s CDN.
 # However, it can use jQuery from Django’s admin area.
 USE_DJANGO_JQUERY = True
-
+JQUERY_URL = os.path.join(BASE_DIR, 'static', 'js', 'jquery.min.js')
 ####################################################################
 # Simple UI Config
 SIMPLEUI_HOME_INFO = False

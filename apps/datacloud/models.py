@@ -116,7 +116,8 @@ class SyncTaskInfo(models.Model):
     outfile_type = models.CharField(verbose_name='数据导出格式', max_length=3,
                                     choices=(('ixf', 'IXF'), ('del', 'DEL')))
     load_method = models.CharField(verbose_name='加载方式', max_length=20, choices=LOAD_METHOD_ITEMS)
-    increment_flag = models.BooleanField(verbose_name='是否入增量', default=True)
+    increment_flag = models.BooleanField(verbose_name='是否入增量', default=True,
+                                         help_text='勾选后入增量表，不勾选只入全量表')
     load_tab_tmp = models.CharField(verbose_name='入库增量表名', max_length=128, null=True, blank=True)
     load_tab_mir = models.CharField(verbose_name='入库全量表名', max_length=128, null=True, blank=True)
     month_flag = models.BooleanField(verbose_name='是否仅保留当月数据', default=False,
