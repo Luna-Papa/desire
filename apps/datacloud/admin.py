@@ -98,7 +98,7 @@ class SyncTaskInfoAdmin(admin.ModelAdmin):
 class PushTaskInfoAdmin(admin.ModelAdmin):
     list_display = ('chn_name', 'push_tab_name', 'file_type',
                     'code_page', 'path', 'val_flag', 'sync_flag')
-    fields = ('source_tab_name', 'push_type', 'path', 'file_type', 'code_page',
+    fields = ('chn_name', 'source_tab_name', 'push_type', 'path', 'file_type', 'code_page',
               'separator', 'delimiter', 'val_flag')
 
     def save_model(self, request, obj, form, change):

@@ -151,7 +151,10 @@ class PushTaskInfo(models.Model):
     数据推送任务信息表
     """
     chn_name = models.ForeignKey(ChannelInfo, on_delete=models.DO_NOTHING, verbose_name='源系统名')
-    source_tab_name = models.ForeignKey(SyncTaskInfo, on_delete=models.DO_NOTHING, verbose_name='源系统表名')
+    # source_tab_name = models.ForeignKey(SyncTaskInfo, on_delete=models.DO_NOTHING, verbose_name='源系统表名')
+    source_tab_name = ChainedForeignKey(SyncTaskInfo, chained_field="chn_name", verbose_name='源系统表名',
+                                        chained_model_field="chn_name",
+                                        show_all=False, auto_choose=True, sort=True)
     # db_name = models.ForeignKey(ChannelInfo, on_delete=models.DO_NOTHING, verbose_name='源系统库名')
     push_type = models.CharField(verbose_name='推送类型', choices=(('TMP', '增量表'), ('MIR', '全量表')),
                                  default='TMP', max_length=3)
@@ -198,6 +201,6 @@ class ScriptConfig(models.Model):
         return self.type_name
 
     class Meta:
-        verbose_name = '任务分类脚本'
+        verbose_name = '任务分类'
         verbose_name_plural = verbose_name
         ordering = ['type']

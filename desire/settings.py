@@ -33,7 +33,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
-    'simpleui',
+    # 'simpleui',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -155,7 +155,7 @@ SIMPLEUI_HOME_INFO = False
 SIMPLEUI_ANALYSIS = False
 SIMPLEUI_STATIC_OFFLINE = True
 SIMPLEUI_ICON = {
-    '任务分类脚本': 'fa fa-cog',
+    '任务分类': 'fa fa-cog',
     '数据同步': 'fas fa-fighter-jet',
     '数据推送': 'fas fa-share',
     '数据源': 'fa fa-database',
