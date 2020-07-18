@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 
 import os
 import sys
+import time
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -132,11 +133,12 @@ USE_TZ = False
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
+# 静态文件根目录目录
+# STATIC_ROOT = os.path.join(BASE_DIR, "static")
 STATIC_URL = '/static/'
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'static'),
 )
-# STATIC_ROOT = os.path.join(BASE_DIR, "static")
 
 ####################################################################
 # 自定义变量 - 接口程序文件路径
@@ -149,6 +151,7 @@ INTERFACE_DIR = (
 # However, it can use jQuery from Django’s admin area.
 USE_DJANGO_JQUERY = True
 JQUERY_URL = os.path.join(BASE_DIR, 'static', 'js', 'jquery.min.js')
+
 ####################################################################
 # Simple UI Config
 SIMPLEUI_HOME_INFO = False
@@ -161,4 +164,5 @@ SIMPLEUI_ICON = {
     '数据源': 'fa fa-database',
     '检测条件': 'fa fa-check-circle',
 }
+SIMPLEUI_LOGO = '/static/svg/logo.svg'
 ####################################################################
