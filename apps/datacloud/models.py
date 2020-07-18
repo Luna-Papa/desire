@@ -142,7 +142,7 @@ class SyncTaskInfo(models.Model):
         return self.tab_name
 
     class Meta:
-        verbose_name = '数据同步加载任务'
+        verbose_name = '数据同步'
         verbose_name_plural = verbose_name
 
 
@@ -180,7 +180,7 @@ class PushTaskInfo(models.Model):
             raise ValidationError({'push_type': '该表未配置入增量！'})
 
     class Meta:
-        verbose_name = '数据推送任务'
+        verbose_name = '数据推送'
         verbose_name_plural = verbose_name
 
 
@@ -198,6 +198,6 @@ class ScriptConfig(models.Model):
         return self.type_name
 
     class Meta:
-        verbose_name = '分类任务脚本配置'
+        verbose_name = '任务分类脚本'
         verbose_name_plural = verbose_name
         ordering = ['type']

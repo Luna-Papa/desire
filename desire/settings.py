@@ -33,6 +33,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'simpleui',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -135,11 +136,29 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'static'),
 )
+# STATIC_ROOT = os.path.join(BASE_DIR, "static")
 
+####################################################################
+# 自定义变量 - 接口程序文件路径
 INTERFACE_DIR = (
     os.path.join(BASE_DIR, 'apps', 'datacloud', 'interface')
 )
+####################################################################
 
 # By default, smart_selects loads jQuery from Google’s CDN.
 # However, it can use jQuery from Django’s admin area.
 USE_DJANGO_JQUERY = True
+
+####################################################################
+# Simple UI Config
+SIMPLEUI_HOME_INFO = False
+SIMPLEUI_ANALYSIS = False
+SIMPLEUI_STATIC_OFFLINE = True
+SIMPLEUI_ICON = {
+    '任务分类脚本': 'fa fa-cog',
+    '数据同步': 'fas fa-fighter-jet',
+    '数据推送': 'fas fa-share',
+    '数据源': 'fa fa-database',
+    '检测条件': 'fa fa-check-circle',
+}
+####################################################################

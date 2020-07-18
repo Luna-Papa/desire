@@ -6,6 +6,9 @@ from django.db.models import Max, Count
 # Register your models here.
 
 
+admin.site.site_header = '数据云管理'
+
+
 @admin.register(ChannelInfo)
 class ChannelInfoAdmin(admin.ModelAdmin):
     list_display = ('sys_name', 'chn_name', 'db_name', 'address', 'chn_start_time',
