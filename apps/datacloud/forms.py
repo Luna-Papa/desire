@@ -11,8 +11,17 @@ class SyncTaskInfoAdminForm(forms.ModelForm):
                   'month_flag', 'backup_flag', 'his_flag', 'his_frequency']
 
     def clean_tab_name(self):
+        # 校验输入表名是否为<schema>.<table_name>格式
         tab_name = self.cleaned_data.get("tab_name").strip()
         if '.' not in tab_name:
             raise ValidationError('请输入带模式名的完整表名！')
         else:
             return tab_name.upper()
+
+    def clean(self):
+        exp_method = self.cleaned_data.get("exp_method")
+        ftp_file = self.cleaned_data.get("ftp_file")
+        if exp_method == 'ftp' and ftp_file is None:
+            raise ValidationError('同步方式为ftp时，ftp条件不允许为空！')
+        else:
+            return self.cleaned_data

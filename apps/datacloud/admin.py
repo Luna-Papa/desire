@@ -68,6 +68,9 @@ class SyncTaskInfoAdmin(admin.ModelAdmin):
     def save_model(self, request, obj, form, change):
         obj.sync_flag = False
         chn_id = ChannelInfo.objects.get(chn_name=obj.chn_name).chn_id
+
+        # 处理表名：当源系统为ODS时，表名不处理；
+        # 源系统为其它系统时将表名中的下划线去除
         obj.tab_name = obj.tab_name.strip().upper()
         tab_name = obj.tab_name.split('.', 1)[1]
         if obj.increment_flag:
@@ -83,6 +86,14 @@ class SyncTaskInfoAdmin(admin.ModelAdmin):
             obj.load_tab_mir = f"ARES.{tab_name}"
         if obj.out_path.endswith('/'):
             obj.out_path = obj.out_path[0:-1]
+
+        # 当导出方式为ftp或cdc时，增量标识和增量检测字段置为空
+        if obj.exp_method == 'ftp' or obj.exp_method == 'cdc':
+            obj.zl_info = ''
+            obj.zl_col = ''
+        # 当增量标识为全量时，增量同步字段置为空
+        elif obj.zl_info == 'Q':
+            obj.zl_col = ''
         if not change:
             task_info = SyncTaskInfo.objects.filter(chn_name=obj.chn_name)
             if task_info:

@@ -107,7 +107,7 @@ class SyncTaskInfo(models.Model):
     exp_method = models.CharField(verbose_name='导出方式', choices=EXP_METHOD_ITEMS,
                                   max_length=10, default='export')
     zl_info = models.CharField(verbose_name='增量标识', choices=(('Z', '增量'), ('Q', '全量')), max_length=1)
-    zl_col = models.CharField(verbose_name='增量同步检测字段', max_length=50, null=True, blank=True)
+    zl_col = models.CharField(verbose_name='增量同步字段', max_length=50, null=True, blank=True)
     ftp_file = models.CharField(verbose_name='FTP同步条件', max_length=256, null=True, blank=True)
     date_type = models.CharField(verbose_name='数据日期', choices=DataSyncTypes.choices, max_length=4,
                                  default=DataSyncTypes.TYPE_B)
