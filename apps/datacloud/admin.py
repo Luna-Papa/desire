@@ -1,12 +1,12 @@
 from django.contrib import admin
 from .models import ChannelInfo, ChkInfo, SyncTaskInfo, PushTaskInfo, ScriptConfig
-from django.db.models import Max, Count
+from .forms import SyncTaskInfoAdminForm
 
 
 # Register your models here.
 
 
-admin.site.site_header = '数据云管理'
+admin.site.site_header = '数据云管理后台'
 
 
 @admin.register(ChannelInfo)
@@ -36,7 +36,7 @@ class ChannelInfoAdmin(admin.ModelAdmin):
 
 @admin.register(ChkInfo)
 class ChkInfoAdmin(admin.ModelAdmin):
-    list_display = ('chn_name', 'chk_seq', 'chk_name', 'date_type', 'val_flag', 'created_time', 'sync_flag')
+    list_display = ('chn_name', 'chk_seq', 'chk_name', 'date_type', 'val_flag', 'sync_flag')
     fields = ('chn_name', 'chk_name', 'chk_condition', 'chk_valid_condition', 'date_type', 'memo', 'val_flag')
 
     def save_model(self, request, obj, form, change):
@@ -57,6 +57,7 @@ class ChkInfoAdmin(admin.ModelAdmin):
 
 @admin.register(SyncTaskInfo)
 class SyncTaskInfoAdmin(admin.ModelAdmin):
+    form = SyncTaskInfoAdminForm
     list_display = ('chn_name', 'chk_name', 'tab_name', 'exp_method', 'zl_info', 'outfile_type',
                     'increment_flag', 'backup_flag', 'his_flag', 'his_frequency', 'val_flag', 'sync_flag')
     fields = ('chn_name', 'chk_name', 'tab_name', 'exp_method', 'zl_info', 'zl_col', 'ftp_file',
@@ -68,11 +69,18 @@ class SyncTaskInfoAdmin(admin.ModelAdmin):
         obj.sync_flag = False
         chn_id = ChannelInfo.objects.get(chn_name=obj.chn_name).chn_id
         obj.tab_name = obj.tab_name.strip().upper()
+        tab_name = obj.tab_name.split('.', 1)[1]
         if obj.increment_flag:
-            obj.load_tab_tmp = f"{obj.chn_name.sys_name}_TMP_{obj.tab_name.replace('_', '')}"
+            if obj.chn_name.sys_name != 'ODS':
+                obj.load_tab_tmp = f"ARES.{obj.chn_name.sys_name}_TMP_{tab_name.replace('_', '')}"
+            else:
+                obj.load_tab_tmp = f"ARES.{tab_name}"
         else:
             obj.load_tab_tmp = ''
-        obj.load_tab_mir = f"{obj.chn_name.sys_name}_MIR_{obj.tab_name.replace('_', '')}"
+        if obj.chn_name.sys_name != 'ODS':
+            obj.load_tab_mir = f"ARES.{obj.chn_name.sys_name}_MIR_{tab_name.replace('_', '')}"
+        else:
+            obj.load_tab_mir = f"ARES.{tab_name}"
         if obj.out_path.endswith('/'):
             obj.out_path = obj.out_path[0:-1]
         if not change:
@@ -107,9 +115,9 @@ class PushTaskInfoAdmin(admin.ModelAdmin):
         chn_id = ChannelInfo.objects.get(chn_name=obj.chn_name).chn_id
         if obj.push_type == 'TMP':
             if obj.source_tab_name.increment_flag:
-                obj.push_tab_name = 'ARES.' + obj.source_tab_name.load_tab_tmp
+                obj.push_tab_name = obj.source_tab_name.load_tab_tmp
         elif obj.push_type == 'MIR':
-            obj.push_tab_name = 'ARES.' + obj.source_tab_name.load_tab_mir
+            obj.push_tab_name = obj.source_tab_name.load_tab_mir
         if not change:
             task_info = PushTaskInfo.objects.filter(chn_name=obj.chn_name)
             if task_info:

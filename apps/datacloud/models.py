@@ -28,7 +28,7 @@ class ChannelInfo(models.Model):
     password = models.CharField(verbose_name='密码', max_length=50)
     chn_start_time = models.CharField(verbose_name='渠道加载时间', max_length=5,
                                       help_text='请输入整点或整半点时间，如：01:00、01:30',
-                                      validators=[RegexValidator("[0-2][0-3]:[0,3]0",
+                                      validators=[RegexValidator("(20|21|22|23|[0-1]\d):[0,3]0",
                                                                  message='请输入整点或整半点时间，如：01:00、01:30！')])
     val_flag = models.BooleanField(verbose_name='有效标识', default=True)
     sync_flag = models.BooleanField(verbose_name='同步标识', default=False)

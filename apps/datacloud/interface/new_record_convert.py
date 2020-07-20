@@ -58,7 +58,7 @@ if __name__ == '__main__':
             JOBID = chn.chn_id + 1
             JOBPRI = 1
             STGID = 1
-            CHAID = chn.chn_id + 1
+            CHAID = chn.chn_id
             JOBCYC = 'D'
             APPURL = ScriptConfig.objects.get(type=1).script
             PARAM = ''
@@ -80,7 +80,7 @@ if __name__ == '__main__':
             JOBID = chn.chn_backup_id
             JOBPRI = 1
             STGID = 50000
-            CHAID = chn.chn_id + STGID
+            CHAID = chn.chn_id
             JOBCYC = 'D'
             APPURL = ScriptConfig.objects.get(type=50000).script
             # 备份作业参数为渠道名称
@@ -110,7 +110,7 @@ if __name__ == '__main__':
             JOBID = chk.chk_id
             JOBPRI = 1
             STGID = 10000
-            CHAID = chk.chn_name.chn_id + STGID
+            CHAID = chk.chn_name.chn_id
             JOBCYC = 'D'
             APPURL = ScriptConfig.objects.get(type=10000).script
             # 数据检测类任务参数为db_name
@@ -139,7 +139,7 @@ if __name__ == '__main__':
             JOBID = chk.chk_done_id
             JOBPRI = 1
             STGID = 40000
-            CHAID = chk.chn_name.chn_id + STGID
+            CHAID = chk.chn_name.chn_id
             JOBCYC = 'D'
             APPURL = ScriptConfig.objects.get(type=40000).script
             # 渠道完成作业参数为空
@@ -166,7 +166,7 @@ if __name__ == '__main__':
             JOBID = chk.chk_done_id + 50000
             JOBPRI = 1
             STGID = 90000
-            CHAID = chk.chn_name.chn_id + STGID
+            CHAID = chk.chn_name.chn_id
             JOBCYC = 'D'
             APPURL = ScriptConfig.objects.get(type=90000).script
             # 渠道完成作业参数为空
