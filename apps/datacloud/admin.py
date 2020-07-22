@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import ChannelInfo, ChkInfo, SyncTaskInfo, PushTaskInfo, ScriptConfig
+from .models import ChannelInfo, ChkInfo, SyncTaskInfo, PushTaskInfo, ScriptConfig, SmsSenderInfo
 from .forms import SyncTaskInfoAdminForm
 
 
@@ -59,11 +59,11 @@ class ChkInfoAdmin(admin.ModelAdmin):
 class SyncTaskInfoAdmin(admin.ModelAdmin):
     form = SyncTaskInfoAdminForm
     list_display = ('chn_name', 'chk_name', 'tab_name', 'exp_method', 'zl_info', 'outfile_type',
-                    'increment_flag', 'backup_flag', 'his_flag', 'his_frequency', 'val_flag', 'sync_flag')
+                    'backup_flag', 'his_flag', 'his_frequency', 'val_flag', 'sync_flag')
     fields = ('chn_name', 'chk_name', 'tab_name', 'exp_method', 'zl_info', 'zl_col', 'ftp_file',
-              'outfile_type', 'date_type', 'out_path', 'load_method', 'increment_flag',
+              'outfile_type', 'date_type', 'out_path', 'load_method',
               'month_flag', 'backup_flag', 'his_flag', 'his_frequency')
-    list_editable = ('increment_flag', 'val_flag', 'his_flag', 'backup_flag')
+    # list_editable = ('increment_flag', 'val_flag', 'his_flag', 'backup_flag')
 
     def save_model(self, request, obj, form, change):
         obj.sync_flag = False
@@ -73,17 +73,28 @@ class SyncTaskInfoAdmin(admin.ModelAdmin):
         # 源系统为其它系统时将表名中的下划线去除
         obj.tab_name = obj.tab_name.strip().upper()
         tab_name = obj.tab_name.split('.', 1)[1]
-        if obj.increment_flag:
-            if obj.chn_name.sys_name != 'ODS':
-                obj.load_tab_tmp = f"ARES.{obj.chn_name.sys_name}_TMP_{tab_name.replace('_', '')}"
-            else:
-                obj.load_tab_tmp = f"ARES.{tab_name}"
+        # 源系统为ODS时，表名要继续拆分
+        ods_tab_name = ''  # ODS存储的实际表名
+        ods_chn_name = ''  # ODS存储的表对应的渠道名
+        if obj.chn_name.sys_name == 'ODS':
+            ods_tab_name = tab_name.split('_')[-1]
+            ods_chn_name = tab_name.split('_')[0]
+            obj.load_tab_tmp = f"ARES.{ods_chn_name}_TMP_{ods_tab_name}"
+            obj.load_tab_mir = f"ARES.{ods_chn_name}_MIR_{ods_tab_name}"
         else:
-            obj.load_tab_tmp = ''
-        if obj.chn_name.sys_name != 'ODS':
+            obj.load_tab_tmp = f"ARES.{obj.chn_name.sys_name}_TMP_{tab_name.replace('_', '')}"
             obj.load_tab_mir = f"ARES.{obj.chn_name.sys_name}_MIR_{tab_name.replace('_', '')}"
-        else:
-            obj.load_tab_mir = f"ARES.{tab_name}"
+
+            # 历史表表名的处理
+            if obj.his_flag:
+                if obj.chn_name.sys_name == 'ODS':
+                    obj.his_tab = f"Demeter.{ods_chn_name}_HIS_{ods_tab_name}"
+                else:
+                    obj.his_tab = f"Demeter.{obj.chn_name.sys_name}_HIS_{tab_name.replace('_', '')}"
+            else:
+                obj.his_tab = ''
+
+        # 处理路径，自动去除末尾的/
         if obj.out_path.endswith('/'):
             obj.out_path = obj.out_path[0:-1]
 
@@ -91,9 +102,14 @@ class SyncTaskInfoAdmin(admin.ModelAdmin):
         if obj.exp_method == 'ftp' or obj.exp_method == 'cdc':
             obj.zl_info = ''
             obj.zl_col = ''
-        # 当增量标识为全量时，增量同步字段置为空
-        elif obj.zl_info == 'Q':
-            obj.zl_col = ''
+        # 当导出方式为export或hpu时，ftp条件字段置为空
+        elif obj.exp_method == 'export' or obj.exp_method == 'hpu':
+            obj.ftp_file = ''
+            # 当增量标识为全量时，增量同步字段置为空
+            if obj.zl_info == 'Q':
+                obj.zl_col = ''
+
+        # 作业号的生成逻辑
         if not change:
             task_info = SyncTaskInfo.objects.filter(chn_name=obj.chn_name)
             if task_info:
@@ -144,3 +160,14 @@ class PushTaskInfoAdmin(admin.ModelAdmin):
 class ScriptConfigAdmin(admin.ModelAdmin):
     list_display = ('type', 'type_name', 'script', 'parameter')
     fields = ('type', 'type_name', 'script', 'parameter')
+
+
+@admin.register(SmsSenderInfo)
+class SmsSenderInfoAdmin(admin.ModelAdmin):
+    list_display = ('name', 'phone', 'val_flag')
+    fields = ('name', 'phone', 'val_flag')
+    list_editable = ('phone', 'val_flag')
+    
+    def save_model(self, request, obj, form, change):
+        obj.sync_flag = False
+        return super(SmsSenderInfoAdmin, self).save_model(request, obj, form, change)

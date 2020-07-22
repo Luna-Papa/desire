@@ -106,7 +106,7 @@ class SyncTaskInfo(models.Model):
                                  verbose_name='检测名称')
     exp_method = models.CharField(verbose_name='导出方式', choices=EXP_METHOD_ITEMS,
                                   max_length=10, default='export')
-    zl_info = models.CharField(verbose_name='增量标识', choices=(('Z', '增量'), ('Q', '全量')), max_length=1)
+    zl_info = models.CharField(verbose_name='同步标识', choices=(('Z', '增量'), ('Q', '全量')), max_length=1)
     zl_col = models.CharField(verbose_name='增量同步字段', max_length=50, null=True, blank=True)
     ftp_file = models.CharField(verbose_name='FTP同步条件', max_length=256, null=True, blank=True)
     date_type = models.CharField(verbose_name='数据日期', choices=DataSyncTypes.choices, max_length=4,
@@ -116,17 +116,18 @@ class SyncTaskInfo(models.Model):
     outfile_type = models.CharField(verbose_name='数据导出格式', max_length=3,
                                     choices=(('ixf', 'IXF'), ('del', 'DEL')))
     load_method = models.CharField(verbose_name='加载方式', max_length=20, choices=LOAD_METHOD_ITEMS)
-    increment_flag = models.BooleanField(verbose_name='是否入增量', default=True,
-                                         help_text='勾选后入增量表，不勾选只入全量表')
+    # increment_flag = models.BooleanField(verbose_name='是否入增量', default=True,
+    #                                      help_text='勾选后入增量表，不勾选只入全量表')
     load_tab_tmp = models.CharField(verbose_name='入库增量表名', max_length=128, null=True, blank=True)
     load_tab_mir = models.CharField(verbose_name='入库全量表名', max_length=128, null=True, blank=True)
     month_flag = models.BooleanField(verbose_name='是否仅保留当月数据', default=False,
-                                     help_text='勾选后仅保留当月数据，每月2号自动清理；否则一直保留')
+                                     help_text='勾选后仅保留当月数据，每月2号自动清理，否则一直保留')
     his_flag = models.BooleanField(verbose_name='是否入历史中心',
                                    help_text='勾选后每日自动将数据存入历史表')
-    his_frequency = models.CharField(verbose_name='入历史频次', max_length=1, help_text='请输入M（月）或D（天）',
+    his_frequency = models.CharField(verbose_name='入历史频次', max_length=1, help_text='输入M（月）或D（天）',
                                      null=True, blank=True,
                                      validators=[RegexValidator("M|D", message='只能输入M或D')])
+    his_tab = models.CharField(verbose_name='入历史表名', max_length=128, null=True, blank=True)
     val_flag = models.BooleanField(verbose_name='有效标识', default=True)
     backup_flag = models.BooleanField(verbose_name='备份标识', default=False,
                                       help_text='勾选后每日自动进行备份')
@@ -134,10 +135,8 @@ class SyncTaskInfo(models.Model):
     new_record_flag = models.BooleanField(verbose_name='是否为新记录', default=True)
     created_time = models.DateTimeField(auto_now_add=True, verbose_name='创建时间')
     updated_time = models.DateTimeField(auto_now=True, verbose_name='上次修改时间')
-    sync_id = models.IntegerField(default=100000, verbose_name='数据卸载编号',
-                                  help_text='自动生成的隐藏列', unique=True)
-    load_id = models.IntegerField(default=100000, verbose_name='数据装载编号',
-                                  help_text='自动生成的隐藏列', unique=True)
+    sync_id = models.IntegerField(default=100000, verbose_name='数据卸载编号', unique=True)
+    load_id = models.IntegerField(default=100000, verbose_name='数据装载编号', unique=True)
 
     def __str__(self):
         return self.tab_name
@@ -205,3 +204,22 @@ class ScriptConfig(models.Model):
         verbose_name = '任务分类'
         verbose_name_plural = verbose_name
         ordering = ['type']
+
+
+class SmsSenderInfo(models.Model):
+    """
+    短信发送信息表
+    """
+    name = models.CharField(verbose_name='人员名称', max_length=20)
+    phone = models.CharField(verbose_name='手机号', max_length=11)
+    val_flag = models.BooleanField(verbose_name='有效标识', default=True)
+    created_time = models.DateTimeField(auto_now_add=True, verbose_name='创建时间')
+    updated_time = models.DateTimeField(auto_now=True, verbose_name='上次修改时间')
+    sync_flag = models.BooleanField(verbose_name='同步标识', default=False)
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = '短信发送'
+        verbose_name_plural = verbose_name

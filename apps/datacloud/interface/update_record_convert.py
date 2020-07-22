@@ -110,7 +110,9 @@ if __name__ == "__main__":
         month_flag = int(sync_row.month_flag)
         his_flag = int(sync_row.his_flag)
         his_cyc = '' if sync_row.his_frequency is None else sync_row.his_frequency
+        his_tab = sync_row.his_tab if sync_row.his_tab else ''
         bak_flag = int(sync_row.backup_flag)
+        channel = sync_row.chn_name.sys_name if sync_row.backup_flag else ''
         val_flag = int(sync_row.val_flag)
         record_date = datetime.now().strftime('%Y-%m-%d')
 

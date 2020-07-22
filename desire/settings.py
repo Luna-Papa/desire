@@ -164,6 +164,7 @@ SIMPLEUI_ICON = {
     '数据推送': 'fas fa-share',
     '数据源': 'fa fa-database',
     '检测条件': 'fa fa-check-circle',
+    '短信发送': 'fas fa-sms'
 }
 SIMPLEUI_LOGO = '/static/svg/logo.svg'
 ####################################################################
