@@ -30,12 +30,13 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-
 # Application definition
 
 INSTALLED_APPS = [
     # 'jet',
+    'simplepro',
     'simpleui',
+    'import_export',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -55,6 +56,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    # 加入simplepro的中间件
+    'simplepro.middlewares.SimpleMiddleware'
 ]
 
 ROOT_URLCONF = 'desire.urls'
@@ -78,7 +81,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'desire.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 
@@ -96,7 +98,6 @@ DATABASES = {
         # 'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
@@ -116,7 +117,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/3.0/topics/i18n/
 
@@ -129,7 +129,6 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = False
-
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
@@ -155,6 +154,7 @@ JQUERY_URL = os.path.join(BASE_DIR, 'static', 'js', 'jquery.min.js')
 
 ####################################################################
 # Simple UI Config
+SIMPLEPRO_INFO = False
 SIMPLEUI_HOME_INFO = False
 SIMPLEUI_ANALYSIS = False
 SIMPLEUI_STATIC_OFFLINE = True
@@ -167,4 +167,68 @@ SIMPLEUI_ICON = {
     '短信发送': 'fas fa-sms'
 }
 SIMPLEUI_LOGO = '/static/svg/logo.svg'
+
+# 菜单展示配置
+SIMPLEUI_CONFIG = {
+    'system_keep': False,
+    'menu_display': ['数据云配置', '用户管理', ],  # 开启排序和过滤功能, 不填此字段为默认排序和全部显示, 空列表[] 为全部不显示.
+    'dynamic': True,  # 设置是否开启动态菜单, 默认为False. 如果开启, 则会在每次用户登陆时动态展示菜单内容
+    'menus': [
+        {
+            'app': 'datacloud',
+            'name': '数据云配置',
+            'icon': 'fas fa-feather-alt',
+            'models': [
+                {
+                    'name': '数据源',
+                    'icon': 'fa fa-database',
+                    'url': 'datacloud/channelinfo/'
+                },
+                {
+                    'name': '检测条件',
+                    'icon': 'fa fa-check-circle',
+                    'url': 'datacloud/chkinfo/'
+                },
+                {
+                    'name': '数据同步',
+                    'icon': 'fas fa-fighter-jet',
+                    'url': 'datacloud/synctaskinfo/'
+                },
+                {
+                    'name': '数据推送',
+                    'icon': 'fas fa-share',
+                    'url': 'datacloud/pushtaskinfo/'
+                },
+                {
+                    'name': '任务分类',
+                    'icon': 'fa fa-cog',
+                    'url': 'datacloud/scriptconfig/'
+                },
+                {
+                    'name': '短信发送',
+                    'icon': 'fas fa-sms',
+                    'url': 'datacloud/smssenderinfo/'
+                },
+            ]
+        },
+        {
+            'app': 'auth',
+            'name': '用户管理',
+            'icon': 'fas fa-user-shield',
+            'models': [
+                {
+                    'name': '用户',
+                    'icon': 'fa fa-user',
+                    'url': 'auth/user/'
+                },
+                {
+                    'name': '组',
+                    'icon': 'fas fa-layer-group',
+                    'url': 'auth/group/'
+                },
+            ]
+        }
+    ]
+}
+
 ####################################################################

@@ -159,7 +159,8 @@ class PushTaskInfo(models.Model):
     push_type = models.CharField(verbose_name='推送类型', choices=(('TMP', '增量表'), ('MIR', '全量表')),
                                  default='TMP', max_length=3)
     push_tab_name = models.CharField(verbose_name='推送表名', max_length=128)
-    path = models.CharField(verbose_name='推送目录', max_length=128)
+    path = models.CharField(verbose_name='推送目录', max_length=128,
+                            validators=[RegexValidator("^\/(\w+)+$", message='请输入合法路径！')])
     file_type = models.CharField(verbose_name='导出文件格式', max_length=3,
                                  choices=(('ixf', 'ixf'), ('txt', 'txt')))
     code_page = models.CharField(verbose_name='编码格式', max_length=10,
@@ -191,8 +192,8 @@ class ScriptConfig(models.Model):
     """
     后台SHELL脚本配置表
     """
-    type = models.IntegerField(verbose_name='类别编号', unique=True)
-    type_name = models.CharField(verbose_name='任务类型名称', max_length=128, unique=True)
+    type = models.CharField(verbose_name='类别编号', unique=True, max_length=5)
+    type_name = models.CharField(verbose_name='任务类型名称', max_length=16, unique=True)
     script = models.CharField(verbose_name='shell脚本配置', max_length=200, unique=True)
     parameter = models.CharField(verbose_name='脚本传入参数', max_length=200, null=True, blank=True,
                                  help_text='多个参数以空格分隔')

@@ -58,8 +58,9 @@ class ChkInfoAdmin(admin.ModelAdmin):
 @admin.register(SyncTaskInfo)
 class SyncTaskInfoAdmin(admin.ModelAdmin):
     form = SyncTaskInfoAdminForm
-    list_display = ('chn_name', 'chk_name', 'tab_name', 'exp_method', 'zl_info', 'outfile_type',
-                    'backup_flag', 'his_flag', 'his_frequency', 'val_flag', 'sync_flag')
+    list_display = ('chn_name', 'chk_name', 'tab_name', 'exp_method', 'zl_info',
+                    # 'outfile_type', 'backup_flag', 'his_flag', 'his_frequency',
+                    'val_flag', 'sync_flag')
     fields = ('chn_name', 'chk_name', 'tab_name', 'exp_method', 'zl_info', 'zl_col', 'ftp_file',
               'outfile_type', 'date_type', 'out_path', 'load_method',
               'month_flag', 'backup_flag', 'his_flag', 'his_frequency')
@@ -141,10 +142,15 @@ class PushTaskInfoAdmin(admin.ModelAdmin):
         obj.chn_name = SyncTaskInfo.objects.filter(tab_name=obj.source_tab_name)[0].chn_name
         chn_id = ChannelInfo.objects.get(chn_name=obj.chn_name).chn_id
         if obj.push_type == 'TMP':
-            if obj.source_tab_name.increment_flag:
-                obj.push_tab_name = obj.source_tab_name.load_tab_tmp
+            obj.push_tab_name = obj.source_tab_name.load_tab_tmp
         elif obj.push_type == 'MIR':
             obj.push_tab_name = obj.source_tab_name.load_tab_mir
+
+        # 当导出格式为ixf时，字段分隔符和字段限定符均置为空
+        if obj.file_type == 'ixf':
+            obj.separator = ''
+            obj.delimiter = ''
+
         if not change:
             task_info = PushTaskInfo.objects.filter(chn_name=obj.chn_name)
             if task_info:
