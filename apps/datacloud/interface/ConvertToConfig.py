@@ -6,7 +6,7 @@ from datetime import datetime
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "desire.settings")
 application = get_wsgi_application()
 
-from datacloud.models import ChannelInfo, ChkInfo, SyncTaskInfo, PushTaskInfo
+from datacloud.models import ChannelInfo, ChkInfo, SyncTaskInfo, PushTaskInfo, SmsSenderInfo
 from datacloud.interface.tools import get_db_conn, get_sql_stmt
 
 
@@ -153,6 +153,32 @@ if __name__ == "__main__":
             # ibm_db.exec_immediate(cur_conn, sql_stmt_push_del)
             sql_stmt_push_ins = eval('f' + '"' + get_sql_stmt('PUSH_INFO:INSERT') + '"')
             curr.execute(sql_stmt_push_ins)
+            # ibm_db.exec_immediate(cur_conn, sql_stmt_push_ins)
+
+            # 修改状态为已同步
+            sync_row.sync_flag = True
+            sync_row.save()
+
+    ##########################################
+    # 生成短信配置表：
+    # 根据SmsSenderInfo表中未同步的记录
+    # 对ETL DB中配置表的对应记录进行新增或更新
+    ##########################################
+    sms_sender_info = SmsSenderInfo.objects.filter(sync_flag=False)
+    if sms_sender_info.exists():
+        # 待同步记录
+        for sync_row in sms_sender_info:
+            name = sync_row.name
+            phone = sync_row.phone
+            val_flag = int(sync_row.val_flag)
+            record_date = datetime.now().strftime('%Y-%m-%d')
+
+            # 拼装并执行DB2 SQL语句
+            sql_stmt_sms_del = eval('f' + '"' + get_sql_stmt('SMS_SENDER:DELETE') + '"')
+            curr.execute(sql_stmt_sms_del)
+            # ibm_db.exec_immediate(cur_conn, sql_stmt_push_del)
+            sql_stmt_sms_ins = eval('f' + '"' + get_sql_stmt('SMS_SENDER:INSERT') + '"')
+            curr.execute(sql_stmt_sms_ins)
             # ibm_db.exec_immediate(cur_conn, sql_stmt_push_ins)
 
             # 修改状态为已同步

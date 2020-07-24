@@ -1,7 +1,7 @@
 from django.contrib import admin
 from .models import ChannelInfo, ChkInfo, SyncTaskInfo, PushTaskInfo, ScriptConfig, SmsSenderInfo
 from .forms import SyncTaskInfoAdminForm
-
+from import_export.admin import ImportExportModelAdmin
 
 # Register your models here.
 
@@ -10,7 +10,7 @@ admin.site.site_header = '数据云管理后台'
 
 
 @admin.register(ChannelInfo)
-class ChannelInfoAdmin(admin.ModelAdmin):
+class ChannelInfoAdmin(ImportExportModelAdmin):
     list_display = ('sys_name', 'chn_name', 'db_name', 'address', 'chn_start_time',
                     'created_time', 'sync_flag')
     fields = ('sys_name', 'chn_name', 'db_name', 'address', 'port', 'code_page',
@@ -35,7 +35,7 @@ class ChannelInfoAdmin(admin.ModelAdmin):
 
 
 @admin.register(ChkInfo)
-class ChkInfoAdmin(admin.ModelAdmin):
+class ChkInfoAdmin(ImportExportModelAdmin):
     list_display = ('chn_name', 'chk_seq', 'chk_name', 'date_type', 'val_flag', 'sync_flag')
     fields = ('chn_name', 'chk_name', 'chk_condition', 'chk_valid_condition', 'date_type', 'memo', 'val_flag')
 
@@ -56,7 +56,7 @@ class ChkInfoAdmin(admin.ModelAdmin):
 
 
 @admin.register(SyncTaskInfo)
-class SyncTaskInfoAdmin(admin.ModelAdmin):
+class SyncTaskInfoAdmin(ImportExportModelAdmin):
     form = SyncTaskInfoAdminForm
     list_display = ('chn_name', 'chk_name', 'tab_name', 'exp_method', 'zl_info',
                     # 'outfile_type', 'backup_flag', 'his_flag', 'his_frequency',
@@ -131,7 +131,7 @@ class SyncTaskInfoAdmin(admin.ModelAdmin):
 
 
 @admin.register(PushTaskInfo)
-class PushTaskInfoAdmin(admin.ModelAdmin):
+class PushTaskInfoAdmin(ImportExportModelAdmin):
     list_display = ('chn_name', 'push_tab_name', 'file_type',
                     'code_page', 'path', 'val_flag', 'sync_flag')
     fields = ('chn_name', 'source_tab_name', 'push_type', 'path', 'file_type', 'code_page',
@@ -163,14 +163,14 @@ class PushTaskInfoAdmin(admin.ModelAdmin):
 
 
 @admin.register(ScriptConfig)
-class ScriptConfigAdmin(admin.ModelAdmin):
+class ScriptConfigAdmin(ImportExportModelAdmin):
     list_display = ('type', 'type_name', 'script', 'parameter')
     fields = ('type', 'type_name', 'script', 'parameter')
 
 
 @admin.register(SmsSenderInfo)
-class SmsSenderInfoAdmin(admin.ModelAdmin):
-    list_display = ('name', 'phone', 'val_flag')
+class SmsSenderInfoAdmin(ImportExportModelAdmin):
+    list_display = ('name', 'phone', 'val_flag', 'sync_flag')
     fields = ('name', 'phone', 'val_flag')
     list_editable = ('phone', 'val_flag')
     
