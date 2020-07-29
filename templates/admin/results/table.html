@@ -80,35 +80,35 @@ show-icon>
             </template>
       </el-table-column>
   </template>
-<!--  {% if has_change_permission or has_delete_permission %}-->
-<!--  <el-table-column v-if="exts.actions_show"-->
-<!--      :fixed="table.actionFixed"-->
-<!--      label="操作"-->
-<!--      align="center"-->
-<!--      width="150">-->
-<!--      <template slot-scope="scope">-->
+  {% if has_change_permission or has_delete_permission %}
+  <el-table-column v-if="exts.actions_show"
+      :fixed="table.actionFixed"
+      label="操作"
+      align="center"
+      width="150">
+      <template slot-scope="scope">
 
-<!--      {% if has_change_permission %}-->
-<!--        <el-button-->
-<!--          size="mini"-->
-<!--          icon="el-icon-edit"-->
-<!--          :underline="false"-->
-<!--          style="padding: 6px"-->
-<!--          @click="edit(null,scope.row._id)">编辑</el-button>-->
-<!--      {% endif %}-->
+      {% if has_change_permission %}
+        <el-button
+          size="mini"
+          icon="el-icon-edit"
+          :underline="false"
+          style="padding: 6px"
+          @click="edit(null,scope.row._id)">编辑</el-button>
+      {% endif %}
 
-<!--      {% if has_delete_permission %}-->
-<!--        <el-button-->
-<!--          size="mini"-->
-<!--          type="danger"-->
-<!--          icon="el-icon-remove-outline"-->
-<!--          :underline="false"-->
-<!--          style="padding: 6px"-->
-<!--          @click="deleteData(scope.row._id)">删除</el-button>-->
-<!--      {% endif %}-->
+      {% if has_delete_permission %}
+        <el-button
+          size="mini"
+          type="danger"
+          icon="el-icon-remove-outline"
+          :underline="false"
+          style="padding: 6px"
+          @click="deleteData(scope.row._id)">删除</el-button>
+      {% endif %}
 
-<!--      </template>-->
-<!--    </el-table-column>-->
-<!--    {% endif %}-->
+      </template>
+    </el-table-column>
+    {% endif %}
 </el-table>
 </transition>

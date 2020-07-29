@@ -34,7 +34,7 @@ ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
     # 'jet',
-    'simplepro',
+    # 'simplepro',
     'simpleui',
     'import_export',
     'django.contrib.admin',
@@ -57,7 +57,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     # 加入simplepro的中间件
-    'simplepro.middlewares.SimpleMiddleware'
+    # 'simplepro.middlewares.SimpleMiddleware'
 ]
 
 ROOT_URLCONF = 'desire.urls'

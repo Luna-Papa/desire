@@ -7,6 +7,7 @@ from import_export.admin import ImportExportModelAdmin
 
 
 admin.site.site_header = '数据云管理后台'
+admin.site.site_title = '数据云'
 
 
 @admin.register(ChannelInfo)

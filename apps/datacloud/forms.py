@@ -23,9 +23,9 @@ class SyncTaskInfoAdminForm(forms.ModelForm):
         ftp_file = self.cleaned_data.get("ftp_file")
         his_flag = self.cleaned_data.get("his_flag")
         his_frequency = self.cleaned_data.get("his_frequency")
-        tab_name = self.cleaned_data.get("tab_name")
-        chn_name = self.cleaned_data.get("chn_name")
-        zl_info = self.cleaned_data.get("zl_info")
+        # tab_name = self.cleaned_data.get("tab_name")
+        # chn_name = self.cleaned_data.get("chn_name")
+        # zl_info = self.cleaned_data.get("zl_info")
 
         if exp_method == 'ftp' and ftp_file is None:
             raise ValidationError('同步方式为ftp时，ftp条件不允许为空！')

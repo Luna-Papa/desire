@@ -23,7 +23,7 @@
 {% block particles %}{% endblock %}
 {% block logo %}
     <div class="banner">
-        <img src="{% static 'svg/logo1.svg' %}" alt="" style="margin-left: 25px">
+        <img src="{% static 'svg/logo1.svg' %}" style="margin-left: 25px">
 {#            {% if "SIMPLEUI_LOGO"|get_config %}#}
 {#                <img src="{{ "SIMPLEUI_LOGO"|get_config |safe }}">#}
 {#            {% else %}#}
@@ -53,5 +53,5 @@
 
         <input type="hidden" name="next" value="{{ next }}"/>
     </form>
-{#    <div class="design">Designed by Ahrcu</div>#}
+{#    <div class="design">Designed by <a href="https://github.com/newpanjing/simpleui" target="_blank">Simpleui</a></div>#}
 {% endblock %}
