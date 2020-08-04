@@ -1,0 +1,29 @@
+{% extends "admin/change_form.html" %}
+{% load i18n admin_urls static admin_modify %}
+
+{% block after_field_sets %}
+    <script src="{% static 'js/jquery-3.5.1.min.js' %}"></script>
+    <script type="text/javascript">
+        $("#id_chn_name").change(function () {
+            const chn_name = $(this).val();
+            $.ajax({
+                url: '/choose_chk_info/',
+                data: {"chn_name": chn_name},
+                type: 'GET',
+                dataType: 'json',
+                success: function (data) {
+                    let content = '';
+                    $.each(data, function (i, chk) {
+                        content += '<option value'+chk.chk_name+'>'+chk.chk_name+'</option>';
+                    });
+                    $('#id_chk_name').html(content)
+                },
+            })
+                .fail(function(){
+                    let content = '';
+                    content+='<option value=chk_name> --------- </option>';
+                    $('#id_chk_name').html(content)
+		        });
+        })
+    </script>
+{% endblock %}

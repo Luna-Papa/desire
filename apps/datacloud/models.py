@@ -1,5 +1,5 @@
 from django.db import models
-from smart_selects.db_fields import ChainedForeignKey
+# from smart_selects.db_fields import ChainedForeignKey
 from django.core.validators import RegexValidator
 from django.core.exceptions import ValidationError
 
@@ -99,11 +99,11 @@ class SyncTaskInfo(models.Model):
     )
 
     chn_name = models.ForeignKey(ChannelInfo, on_delete=models.DO_NOTHING, verbose_name='源系统名')
+    chk_name = models.ForeignKey(ChkInfo, on_delete=models.DO_NOTHING, verbose_name='检测名称')
+    # chk_name = ChainedForeignKey(ChkInfo, chained_field="chn_name", chained_model_field="chn_name",
+    #                              show_all=False, auto_choose=True, sort=True,
+    #                              verbose_name='检测名称')
     tab_name = models.CharField(verbose_name='源系统表名', max_length=128)
-    # chk_name = models.ForeignKey(ChkInfo, on_delete=models.DO_NOTHING, verbose_name='检测名称')
-    chk_name = ChainedForeignKey(ChkInfo, chained_field="chn_name", chained_model_field="chn_name",
-                                 show_all=False, auto_choose=True, sort=True,
-                                 verbose_name='检测名称')
     exp_method = models.CharField(verbose_name='导出方式', choices=EXP_METHOD_ITEMS,
                                   max_length=10, default='export')
     zl_info = models.CharField(verbose_name='同步标识', choices=(('Z', '增量'), ('Q', '全量')), max_length=1)
@@ -151,10 +151,10 @@ class PushTaskInfo(models.Model):
     数据推送任务信息表
     """
     chn_name = models.ForeignKey(ChannelInfo, on_delete=models.DO_NOTHING, verbose_name='源系统名')
-    # source_tab_name = models.ForeignKey(SyncTaskInfo, on_delete=models.DO_NOTHING, verbose_name='源系统表名')
-    source_tab_name = ChainedForeignKey(SyncTaskInfo, chained_field="chn_name", verbose_name='源系统表名',
-                                        chained_model_field="chn_name",
-                                        show_all=False, auto_choose=True, sort=True)
+    source_tab_name = models.ForeignKey(SyncTaskInfo, on_delete=models.DO_NOTHING, verbose_name='源系统表名')
+    # source_tab_name = ChainedForeignKey(SyncTaskInfo, chained_field="chn_name", verbose_name='源系统表名',
+    #                                     chained_model_field="chn_name",
+    #                                     show_all=False, auto_choose=True, sort=True)
     # db_name = models.ForeignKey(ChannelInfo, on_delete=models.DO_NOTHING, verbose_name='源系统库名')
     push_type = models.CharField(verbose_name='推送类型', choices=(('TMP', '增量表'), ('MIR', '全量表')),
                                  default='TMP', max_length=3)
@@ -169,6 +169,8 @@ class PushTaskInfo(models.Model):
                                  help_text='不指定则默认为，')
     delimiter = models.CharField(verbose_name='字段限定符', max_length=10, null=True, blank=True,
                                  help_text='不指定则默认为"')
+    # 根据push_tab_name、file_type、code_page、separator、delimiter生成唯一标识
+    # tab_id = models.CharField(verbose_name='推送标识', max_length=120, unique=True)
     val_flag = models.BooleanField(verbose_name='有效标识', default=True)
     sync_flag = models.BooleanField(verbose_name='同步标识', default=False)
     new_record_flag = models.BooleanField(verbose_name='是否为新记录', default=True)
@@ -180,8 +182,8 @@ class PushTaskInfo(models.Model):
         return self.push_tab_name
 
     def clean(self):
-        if self.push_type == "TMP" and not self.source_tab_name.increment_flag:
-            raise ValidationError({'push_type': '该表未配置入增量！'})
+        if self.source_tab_name.chn_name != self.chn_name:
+            raise ValidationError({'source_tab_name': '表名与数据源不一致！'})
 
     class Meta:
         verbose_name = '数据推送'

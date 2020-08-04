@@ -14,11 +14,19 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, re_path
 from django.conf.urls import url, include
+from datacloud.views import choose_chk_info
+from django.conf import settings
+from django.views.static import serve
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    url(r'^chaining/', include('smart_selects.urls')),
-    # url(r'^jet/', include('jet.urls', 'jet')),  # Django JET URLS
+    path('datacloud/', include('datacloud.urls')),
+    # url(r'^chaining/', include('smart_selects.urls')),
+    path('choose_chk_info/', choose_chk_info, name='choose_chk_info'),
+    # 配置媒体文件的路由地址
+    re_path('media/(?P<path>.*)', serve,
+            {'document_root': settings.MEDIA_ROOT}, name='media'),
+
 ]

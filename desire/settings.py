@@ -33,7 +33,6 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
-    # 'jet',
     # 'simplepro',
     'simpleui',
     'import_export',
@@ -59,6 +58,8 @@ MIDDLEWARE = [
     # 加入simplepro的中间件
     # 'simplepro.middlewares.SimpleMiddleware'
 ]
+
+# AUTH_USER_MODEL = "users.UserProfile"
 
 ROOT_URLCONF = 'desire.urls'
 
@@ -139,6 +140,11 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'static'),
 )
+# 设置媒体路由地址
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+LOGIN_URL = '/login/'
 
 ####################################################################
 # 自定义变量 - 接口程序文件路径

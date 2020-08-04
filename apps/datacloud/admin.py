@@ -16,6 +16,7 @@ class ChannelInfoAdmin(ImportExportModelAdmin):
                     'created_time', 'sync_flag')
     fields = ('sys_name', 'chn_name', 'db_name', 'address', 'port', 'code_page',
               'username', 'password', 'chn_start_time')
+    search_fields = ['chn_name', 'db_name', 'sys_name']
 
     def save_model(self, request, obj, form, change):
         obj.sync_flag = False
@@ -39,6 +40,8 @@ class ChannelInfoAdmin(ImportExportModelAdmin):
 class ChkInfoAdmin(ImportExportModelAdmin):
     list_display = ('chn_name', 'chk_seq', 'chk_name', 'date_type', 'val_flag', 'sync_flag')
     fields = ('chn_name', 'chk_name', 'chk_condition', 'chk_valid_condition', 'date_type', 'memo', 'val_flag')
+    search_fields = ['chk_name']
+    autocomplete_fields = ['chn_name']
 
     def save_model(self, request, obj, form, change):
         obj.sync_flag = False
@@ -62,12 +65,18 @@ class SyncTaskInfoAdmin(ImportExportModelAdmin):
     list_display = ('chn_name', 'chk_name', 'tab_name', 'exp_method', 'zl_info',
                     # 'outfile_type', 'backup_flag', 'his_flag', 'his_frequency',
                     'val_flag', 'sync_flag')
-    fields = ('chn_name', 'chk_name', 'tab_name', 'exp_method', 'zl_info', 'zl_col', 'ftp_file',
+    # change_form_template = 'admin/extra/record_change_form.html'
+    fields = ('chk_name', 'tab_name', 'exp_method', 'zl_info', 'zl_col', 'ftp_file',
               'outfile_type', 'date_type', 'out_path', 'load_method',
               'month_flag', 'backup_flag', 'his_flag', 'his_frequency')
-    # list_editable = ('increment_flag', 'val_flag', 'his_flag', 'backup_flag')
+    autocomplete_fields = ['chk_name']
+    search_fields = ['tab_name', 'chk_name']
 
     def save_model(self, request, obj, form, change):
+
+        # 根据chk_name处理chn_name
+        obj.chn_name = obj.chk_name.chn_name
+
         obj.sync_flag = False
         chn_id = ChannelInfo.objects.get(chn_name=obj.chn_name).chn_id
 
@@ -137,6 +146,7 @@ class PushTaskInfoAdmin(ImportExportModelAdmin):
                     'code_page', 'path', 'val_flag', 'sync_flag')
     fields = ('chn_name', 'source_tab_name', 'push_type', 'path', 'file_type', 'code_page',
               'separator', 'delimiter', 'val_flag')
+    autocomplete_fields = ['source_tab_name']
 
     def save_model(self, request, obj, form, change):
         obj.sync_flag = False
@@ -174,7 +184,7 @@ class SmsSenderInfoAdmin(ImportExportModelAdmin):
     list_display = ('name', 'phone', 'val_flag', 'sync_flag')
     fields = ('name', 'phone', 'val_flag')
     list_editable = ('phone', 'val_flag')
-    
+
     def save_model(self, request, obj, form, change):
         obj.sync_flag = False
         return super(SmsSenderInfoAdmin, self).save_model(request, obj, form, change)

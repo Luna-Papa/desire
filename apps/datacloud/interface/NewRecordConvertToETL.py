@@ -160,7 +160,7 @@ if __name__ == '__main__':
             # ibm_db.exec_immediate(cur_conn, chk_sql4)
 
             # 生成渠道完成通知短信作业信息
-            ID = chk.chk_done_id + 50000  # 备份作业号是90000开头
+            ID = chk.chk_done_id + 50000  # 短信作业号是90000开头
             JOBTYPE = 1
             JOBCNM = f'{chk.chk_name}-完成-短信通知'
             JOBID = chk.chk_done_id + 50000
@@ -301,7 +301,7 @@ if __name__ == '__main__':
 
             # 拼接DB2 SQL语句
             push_task_sql1 = eval('f' + '"' + get_sql_stmt('INIT_JOB') + '"')
-            push_task_sql2 = eval('f' + '"' + get_sql_stmt('SCTFLW') + '"')  # 依赖关系：渠道检测完成 -> 推送
+            push_task_sql2 = eval('f' + '"' + get_sql_stmt('SCTFLW') + '"')  # 依赖关系：渠道完成 -> 推送
 
             # 执行DB2 SQL语句
             curr.execute(push_task_sql1)

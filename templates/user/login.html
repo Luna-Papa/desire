@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>数据云 | 登录</title>
+
+    <link href="{% static 'css/tailwind.min.css' %}" rel="stylesheet">
+    <link href="{% static 'css/login.css' %}" rel="stylesheet">
+
+</head>
+
+<body class="flex justify-center items-center h-screen flex-column">
+    <div class="shadow-2xl center_frame">
+
+        <p class="title font-bold text-2xl mb-2">欢迎访问数据云平台</p>
+
+            <form class="login-form my-4" method="post" action="/login/">
+                {% csrf_token %}
+                <input type="text" placeholder="username" required name="username"/>
+                <input type="password" placeholder="password" required name="password"/>
+
+                <p class="message mb-4 font-normal">
+                    {{ msg }}
+                </p>
+
+                <button type="submit" class="text-white text-center mb-4 mt-2">
+                    登&nbsp;&nbsp;录
+                </button>
+
+                <p class="font-normal">
+                    <a href="#">忘记密码&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;</a>
+                    <a href="#">&nbsp;&nbsp;注册新账号</a>
+                </p>
+
+            </form>
+
+        <p class="text-xs footer font-light text-center mt-6">
+            安徽省农村信用社联合社 © 2020 &nbsp;&nbsp;&nbsp;&nbsp;Designed by hupeng
+        </p>
+
+    </div>
+</body>
+
+</html>

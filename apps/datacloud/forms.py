@@ -6,7 +6,7 @@ from django.core.exceptions import ValidationError
 class SyncTaskInfoAdminForm(forms.ModelForm):
     class Meta:
         model = SyncTaskInfo
-        fields = ['chn_name', 'chk_name', 'tab_name', 'exp_method', 'zl_info', 'zl_col', 'ftp_file',
+        fields = ['chn_name', 'tab_name', 'exp_method', 'zl_info', 'zl_col', 'ftp_file',
                   'outfile_type', 'date_type', 'out_path', 'load_method',
                   'month_flag', 'backup_flag', 'his_flag', 'his_frequency']
 
