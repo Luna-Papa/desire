@@ -15,3 +15,7 @@ apps/datacloud/__pycache__/
 apps/datacloud/interface/__pycache__/
 apps/infocenter/__pycache__/
 desire/__pycache__/
+/static/img/
+/static/font-awesome/
+__pycache__/
+simplepro.lic
