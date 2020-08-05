@@ -114,7 +114,7 @@ class SyncTaskInfo(models.Model):
     out_path = models.CharField(verbose_name='数据导出目录', max_length=128, null=True, blank=True,
                                 validators=[RegexValidator("^\/(\w+)+$", message='请输入合法路径！')])
     outfile_type = models.CharField(verbose_name='数据导出格式', max_length=3,
-                                    choices=(('ixf', 'IXF'), ('del', 'DEL')))
+                                    choices=(('ixf', 'IXF'), ('del', 'DEL')), default='del')
     load_method = models.CharField(verbose_name='加载方式', max_length=20, choices=LOAD_METHOD_ITEMS)
     # increment_flag = models.BooleanField(verbose_name='是否入增量', default=True,
     #                                      help_text='勾选后入增量表，不勾选只入全量表')

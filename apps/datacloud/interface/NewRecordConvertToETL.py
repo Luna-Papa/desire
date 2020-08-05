@@ -9,6 +9,7 @@ application = get_wsgi_application()
 
 from datacloud.models import ChannelInfo, ChkInfo, SyncTaskInfo, PushTaskInfo, ScriptConfig
 
+SHELL_HOME = '${user.home}/eDataMover/script/'
 
 if __name__ == '__main__':
     """
@@ -60,7 +61,7 @@ if __name__ == '__main__':
             STGID = 1
             CHAID = chn.chn_id
             JOBCYC = 'D'
-            APPURL = ScriptConfig.objects.get(type='1').script
+            APPURL = SHELL_HOME + ScriptConfig.objects.get(type='1').script
             PARAM = ''
             JOBVAL = 1
             JOBIGN = 0
@@ -82,7 +83,7 @@ if __name__ == '__main__':
             STGID = 50000
             CHAID = chn.chn_id
             JOBCYC = 'D'
-            APPURL = ScriptConfig.objects.get(type='50000').script
+            APPURL = SHELL_HOME + ScriptConfig.objects.get(type='50000').script
             # 备份作业参数为渠道名称
             PARAM = chn.sys_name
             JOBVAL = 1
@@ -112,7 +113,7 @@ if __name__ == '__main__':
             STGID = 10000
             CHAID = chk.chn_name.chn_id
             JOBCYC = 'D'
-            APPURL = ScriptConfig.objects.get(type='10000').script
+            APPURL = SHELL_HOME + ScriptConfig.objects.get(type='10000').script
             # 数据检测类任务参数为db_name
             PARAM = chk.chn_name.db_name
             JOBVAL = 1
@@ -141,7 +142,7 @@ if __name__ == '__main__':
             STGID = 40000
             CHAID = chk.chn_name.chn_id
             JOBCYC = 'D'
-            APPURL = ScriptConfig.objects.get(type='40000').script
+            APPURL = SHELL_HOME + ScriptConfig.objects.get(type='40000').script
             # 渠道完成作业参数为空
             PARAM = ''
             JOBVAL = 1
@@ -168,7 +169,7 @@ if __name__ == '__main__':
             STGID = 90000
             CHAID = chk.chn_name.chn_id
             JOBCYC = 'D'
-            APPURL = ScriptConfig.objects.get(type='90000').script
+            APPURL = SHELL_HOME + ScriptConfig.objects.get(type='90000').script
             # 渠道完成作业参数为空
             PARAM = f'{chk.chk_name}-任务完成'
             JOBVAL = 1
@@ -208,7 +209,7 @@ if __name__ == '__main__':
             STGID = 20000
             CHAID = sync_task.chn_name.chn_id
             JOBCYC = 'D'
-            APPURL = ScriptConfig.objects.get(type='20000').script
+            APPURL = SHELL_HOME + ScriptConfig.objects.get(type='20000').script
             # 数据卸载类任务参数为数据库名+源系统表名
             PARAM = sync_task.chn_name.db_name + ' ' + sync_task.tab_name
             JOBVAL = 1
@@ -239,7 +240,7 @@ if __name__ == '__main__':
             STGID = 30000
             CHAID = sync_task.chn_name.chn_id
             JOBCYC = 'D'
-            APPURL = ScriptConfig.objects.get(type='30000').script
+            APPURL = SHELL_HOME + ScriptConfig.objects.get(type='30000').script
             # 数据装载类任务参数为数据库名+源系统表名
             PARAM = sync_task.chn_name.db_name + ' ' + sync_task.tab_name
             JOBVAL = 1
@@ -289,7 +290,7 @@ if __name__ == '__main__':
             STGID = 60000
             CHAID = push_task.chn_name.chn_id
             JOBCYC = 'D'
-            APPURL = ScriptConfig.objects.get(type='60000').script
+            APPURL = SHELL_HOME + ScriptConfig.objects.get(type='60000').script
             # 数据推送类任务参数为表名
             PARAM = push_task.push_tab_name
             JOBVAL = 1

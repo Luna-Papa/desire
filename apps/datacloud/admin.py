@@ -66,7 +66,6 @@ class SyncTaskInfoAdmin(ImportExportModelAdmin):
     list_display = ('chn_name', 'chk_name', 'tab_name', 'exp_method', 'zl_info',
                     # 'outfile_type', 'backup_flag', 'his_flag', 'his_frequency',
                     'val_flag', 'sync_flag')
-    # change_form_template = 'admin/extra/record_change_form.html'
     # fields = ('chk_name', 'tab_name', 'exp_method', 'zl_info', 'zl_col', 'ftp_file',
     #           'outfile_type', 'date_type', 'out_path', 'load_method',
     #           'month_flag', 'backup_flag', 'his_flag', 'his_frequency')
@@ -93,6 +92,8 @@ class SyncTaskInfoAdmin(ImportExportModelAdmin):
     autocomplete_fields = ['chk_name']
     search_fields = ['tab_name', 'chk_name']
     list_filter = ('chn_name', 'chk_name')
+
+    change_form_template = 'admin/extra/SyncTaskInfo_change_form.html'
 
     def save_model(self, request, obj, form, change):
 
@@ -176,6 +177,8 @@ class PushTaskInfoAdmin(ImportExportModelAdmin):
     }
     list_filter = ('chn_name', )
     search_fields = ('chn_name', 'source_tab_name')
+
+    change_form_template = 'admin/extra/PushTaskInfo_change_form.html'
 
     def save_model(self, request, obj, form, change):
         obj.sync_flag = False
