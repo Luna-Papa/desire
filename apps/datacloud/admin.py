@@ -17,6 +17,7 @@ class ChannelInfoAdmin(ImportExportModelAdmin):
     fields = ('sys_name', 'chn_name', 'db_name', 'address', 'port', 'code_page',
               'username', 'password', 'chn_start_time')
     search_fields = ['chn_name', 'db_name', 'sys_name']
+    list_filter = ('val_flag', )
 
     def save_model(self, request, obj, form, change):
         obj.sync_flag = False
@@ -66,11 +67,32 @@ class SyncTaskInfoAdmin(ImportExportModelAdmin):
                     # 'outfile_type', 'backup_flag', 'his_flag', 'his_frequency',
                     'val_flag', 'sync_flag')
     # change_form_template = 'admin/extra/record_change_form.html'
-    fields = ('chk_name', 'tab_name', 'exp_method', 'zl_info', 'zl_col', 'ftp_file',
-              'outfile_type', 'date_type', 'out_path', 'load_method',
-              'month_flag', 'backup_flag', 'his_flag', 'his_frequency')
+    # fields = ('chk_name', 'tab_name', 'exp_method', 'zl_info', 'zl_col', 'ftp_file',
+    #           'outfile_type', 'date_type', 'out_path', 'load_method',
+    #           'month_flag', 'backup_flag', 'his_flag', 'his_frequency')
+    radio_fields = {'zl_info': admin.HORIZONTAL, 'exp_method': admin.HORIZONTAL,
+                    'outfile_type': admin.HORIZONTAL, 'load_method': admin.HORIZONTAL,
+                    'his_frequency': admin.HORIZONTAL}
+    fieldsets = [
+        ('任务配置',
+         {
+             'fields':
+                 ['chk_name', 'tab_name', 'outfile_type', 'exp_method', 'date_type', 'load_method', 'zl_info']
+         }),
+        ('任务条件',
+         {
+             'fields':
+                 ['out_path', 'zl_col', 'ftp_file']
+         }),
+        ('储存配置',
+         {
+             'fields':
+                 ['month_flag', 'backup_flag', 'his_flag', 'his_frequency']
+         })
+    ]
     autocomplete_fields = ['chk_name']
     search_fields = ['tab_name', 'chk_name']
+    list_filter = ('chn_name', 'chk_name')
 
     def save_model(self, request, obj, form, change):
 
@@ -147,6 +169,13 @@ class PushTaskInfoAdmin(ImportExportModelAdmin):
     fields = ('chn_name', 'source_tab_name', 'push_type', 'path', 'file_type', 'code_page',
               'separator', 'delimiter', 'val_flag')
     autocomplete_fields = ['source_tab_name']
+    radio_fields = {
+        'push_type': admin.HORIZONTAL,
+        'file_type': admin.HORIZONTAL,
+        'code_page': admin.HORIZONTAL,
+    }
+    list_filter = ('chn_name', )
+    search_fields = ('chn_name', 'source_tab_name')
 
     def save_model(self, request, obj, form, change):
         obj.sync_flag = False

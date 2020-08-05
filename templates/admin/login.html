@@ -1,11 +1,7 @@
 <!DOCTYPE html>
 {% load i18n static simpletags %}
 {% get_current_language as LANGUAGE_CODE %}{% get_current_language_bidi as LANGUAGE_BIDI %}
-<!--
-   The project use: django-simpleui
-   source code：
-   https://github.com/newpanjing/simpleui
--->
+
 <html lang="{{ LANGUAGE_CODE|default:"en-us" }}" {% if LANGUAGE_BIDI %}dir="rtl"{% endif %}>
 <head>
     <meta charset="UTF-8">
@@ -16,7 +12,7 @@
         <title>{{ site_title }}-{% trans 'Log in' %}</title>
     {% endblock %}
     {% block icon %}
-{#        <link rel="icon" href="{% static '/admin/simpleui-x/img/favicon.png' %}">#}
+        <link rel="icon" href="{% static 'svg/logo1.svg' %}">
     {% endblock %}
 
     {% include 'admin/includes/css-part.html' %}
@@ -27,8 +23,10 @@
     {% block bg %}
         <style type="text/css">
             .bg {
-                background-image: linear-gradient(25deg, #008382, #01a39a, #01c3b3, #00e5cd);
-                min-height: 100%;
+                {#background-image: linear-gradient(25deg, #008382, #01a39a, #01c3b3, #00e5cd);#}
+                background-image: linear-gradient(25deg, #3e4554, #426d70, #3c968c, #23c2aa);
+                height: 100vh;
+                width: 100vw;
             }
         </style>
     {% endblock %}
@@ -43,15 +41,15 @@
     {% block logo %}
         <div class="logo">
             {% if "SIMPLEUI_LOGO"|get_config %}
-                <img src="{{ "SIMPLEUI_LOGO"|get_config |safe }}">
+                <img src="{{ "SIMPLEUI_LOGO"|get_config |safe }}" alt="">
             {% else %}
-                <img src="{% static '/admin/simpleui-x/img/logo.png' %}">
+                <img src="{% static '/admin/simpleui-x/img/logo.png' %}" alt="">
             {% endif %}
         </div>
     {% endblock %}
 
     {% block header %}
-        <div class="header">{{ site_header }}</div>
+        <div class="header" style="color: #FFFFFF">{{ site_header }}</div>
     {% endblock %}
 
     {% block errors %}
@@ -87,11 +85,15 @@
             </div>
             <div class="simpleui-input-inline login-btn">
                 <el-button :icon="loading?'el-icon-loading':''" @click="login()"
-                           type="primary">{% trans 'Log in' %}</el-button>
+                           type="primary">登&nbsp;&nbsp;录</el-button>
             </div>
 
             <input type="hidden" name="next" value="{{ next }}"/>
         </form>
+
+        <p style="color: white; font-size: 14px; margin-top: 8vh; text-align: center">
+            安徽省农村信用社联合社 © 2020
+        </p>
     {% endblock %}
 </div>
 

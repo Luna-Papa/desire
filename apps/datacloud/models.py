@@ -124,9 +124,11 @@ class SyncTaskInfo(models.Model):
                                      help_text='勾选后仅保留当月数据，每月2号自动清理，否则一直保留')
     his_flag = models.BooleanField(verbose_name='是否入历史中心',
                                    help_text='勾选后每日自动将数据存入历史表')
-    his_frequency = models.CharField(verbose_name='入历史频次', max_length=1, help_text='输入M（月）或D（天）',
-                                     null=True, blank=True,
-                                     validators=[RegexValidator("M|D", message='只能输入M或D')])
+    # his_frequency = models.CharField(verbose_name='入历史频次', max_length=1, help_text='输入M（月）或D（天）',
+    #                                  null=True, blank=True,
+    #                                  validators=[RegexValidator("M|D", message='只能输入M或D')])
+    his_frequency = models.CharField(verbose_name='入历史频次', max_length=1, null=True, blank=True,
+                                     choices=(('M', '月频度'), ('D', '日频度')))
     his_tab = models.CharField(verbose_name='入历史表名', max_length=128, null=True, blank=True)
     val_flag = models.BooleanField(verbose_name='有效标识', default=True)
     backup_flag = models.BooleanField(verbose_name='备份标识', default=False,
