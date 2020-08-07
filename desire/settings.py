@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'datacloud',  # ETL可视化配置
+    'users',  # 用户管理
     'infocenter',  # 工作中的一些信息展示
     'smart_selects',  # 用于外键字段关联过滤
 ]
@@ -214,6 +215,11 @@ SIMPLEUI_CONFIG = {
                     'name': '短信发送',
                     'icon': 'fas fa-sms',
                     'url': 'datacloud/smssenderinfo/'
+                },
+                {
+                    'name': '测试',
+                    # 'icon': 'fas fa-sms',
+                    'url': 'datacloud/test001/'
                 },
             ]
         },

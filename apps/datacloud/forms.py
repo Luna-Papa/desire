@@ -2,13 +2,19 @@ from django import forms
 from .models import SyncTaskInfo
 from django.core.exceptions import ValidationError
 
+BOOL_CHOICES = ((True, 'Yes'), (False, 'No'))
+
 
 class SyncTaskInfoAdminForm(forms.ModelForm):
     class Meta:
         model = SyncTaskInfo
-        fields = ['chn_name', 'tab_name', 'exp_method', 'zl_info', 'zl_col', 'ftp_file',
+        fields = ['chk_name', 'tab_name', 'exp_method', 'zl_info', 'zl_col', 'ftp_file',
                   'outfile_type', 'date_type', 'out_path', 'load_method',
                   'month_flag', 'backup_flag', 'his_flag', 'his_frequency']
+
+        # widgets = {
+        # 'his_flag': forms.CheckboxInput(),
+        # }
 
     def clean_tab_name(self):
         # 校验输入表名是否为<schema>.<table_name>格式

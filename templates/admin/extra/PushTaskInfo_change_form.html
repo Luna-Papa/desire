@@ -5,6 +5,9 @@
     <script src="{% static 'js/jquery-3.5.1.min.js' %}"></script>
     <script type="text/javascript">
         $(function () {
+            $('#id_separator').attr('readonly', true);
+            $('#id_delimiter').attr('readonly', true);
+
             $(':radio[name="file_type"]').click(function () {
                 const file_type = $(this).val()
                 if (file_type === 'ixf'){

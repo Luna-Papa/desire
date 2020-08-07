@@ -228,3 +228,15 @@ class SmsSenderInfo(models.Model):
     class Meta:
         verbose_name = '短信发送'
         verbose_name_plural = verbose_name
+
+
+class Test001(models.Model):
+    chk_name = models.CharField(verbose_name='检测名', max_length=120)
+    chn_name = models.CharField(verbose_name='中文名称', max_length=128)
+
+    def __str__(self):
+        return self.chn_name
+
+    class Meta:
+        verbose_name = '测试'
+        verbose_name_plural = verbose_name

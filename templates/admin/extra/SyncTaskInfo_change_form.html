@@ -6,6 +6,7 @@
     <script type="text/javascript">
         $(function () {
             $('#id_ftp_file').attr('readonly', true);
+            $('#id_zl_col').attr('readonly', true);
             $(':radio[name="exp_method"]').click(function () {
                 const exp_method = $(this).val()
                 if (exp_method === 'ftp'){
