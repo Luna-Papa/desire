@@ -244,6 +244,7 @@ class SyncTaskInfoAdmin(ImportExportModelAdmin):
 
 @admin.register(PushTaskInfo)
 class PushTaskInfoAdmin(ImportExportModelAdmin):
+
     list_display = ('chn_name', 'push_tab_name', 'file_type',
                     'code_page', 'path', 'val_flag', 'sync_flag')
     fields = ('chn_name', 'source_tab_name', 'push_type', 'path', 'file_type', 'code_page',

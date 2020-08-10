@@ -18,10 +18,11 @@ from django.urls import path, re_path
 from django.conf.urls import url, include
 from django.conf import settings
 from django.views.static import serve
+from users.views import index
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', admin.site.urls),
+    path('', index, name='index'),
     path('datacloud/', include('datacloud.urls')),
     path('user/', include('users.urls')),
     # url(r'^chaining/', include('smart_selects.urls')),

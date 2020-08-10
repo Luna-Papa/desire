@@ -4,5 +4,6 @@ from django.contrib.auth import login, logout, authenticate
 # Create your views here.
 
 
-def register_view(request):
-    pass
+def index(request):
+    return render(request, 'user/login.html')
+

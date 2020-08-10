@@ -45,7 +45,7 @@ INSTALLED_APPS = [
     'datacloud',  # ETL可视化配置
     'users',  # 用户管理
     'infocenter',  # 工作中的一些信息展示
-    'smart_selects',  # 用于外键字段关联过滤
+    # 'smart_selects',  # 用于外键字段关联过滤
 ]
 
 MIDDLEWARE = [
@@ -144,6 +144,10 @@ STATICFILES_DIRS = (
 # 设置媒体路由地址
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+# 设置图片路由地址
+IMAGE_URL = '/image/'
+IMAGE_ROOT = os.path.join(BASE_DIR, 'image')
 
 LOGIN_URL = '/login/'
 

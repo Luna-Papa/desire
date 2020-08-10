@@ -1,79 +1,4 @@
-<!DOCTYPE html>
-{% load static %}
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>数据云 | 登录</title>
-    <link rel="stylesheet" href="{% static 'user/css/login.css' %}">
-    <script src="{% static 'js/jquery-3.5.1.min.js' %}"></script>
-</head>
-<body>
-    <div class="materialContainer">
-
-{#        <h1 class="title_h1">欢迎访问数据云</h1>#}
-
-        <div class="box">
-
-            <div class="title">欢迎登录数据云</div>
-
-            <div class="input">
-                <label for="name">Username</label>
-                <input type="text" name="name" id="name">
-                <span class="spin"></span>
-            </div>
-
-            <div class="input">
-                <label for="pass">Password</label>
-                <input type="password" name="pass" id="pass">
-                <span class="spin"></span>
-            </div>
-
-            <div class="button login">
-                <button><span>GO</span> <i class="fa fa-check"></i></button>
-            </div>
-
-            <a href="" class="pass-forgot">Forgot your password?</a>
-
-        </div>
-
-        <div class="overbox">
-
-            <div class="material-button alt-2">
-                <span class="shape"></span>
-            </div>
-
-            <div class="title">注册数据云账户</div>
-
-            <div class="input">
-                <label for="regname">Username</label>
-                <input type="text" name="regname" id="regname">
-                <span class="spin"></span>
-            </div>
-
-            <div class="input">
-                <label for="regpass">Password</label>
-                <input type="password" name="regpass" id="regpass">
-                <span class="spin"></span>
-            </div>
-
-            <div class="input">
-                <label for="reregpass">Repeat Password</label>
-                <input type="password" name="reregpass" id="reregpass">
-                <span class="spin"></span>
-            </div>
-
-            <div class="button">
-                <button><span>NEXT</span></button>
-            </div>
-        </div>
-
-        <p class="footer">
-            安徽省农村信用社联合社 © 2020 &nbsp;&nbsp;&nbsp;&nbsp;Designed by hupeng
-        </p>
-    </div>
-
-<script>
-    $(function() {
+$(function() {
 
    $(".input input").focus(function() {
 
@@ -190,7 +115,5 @@
       }
 
    });
+
 });
-</script>
-</body>
-</html>
