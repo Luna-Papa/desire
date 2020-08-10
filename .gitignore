@@ -20,3 +20,5 @@ desire/__pycache__/
 __pycache__/
 simplepro.lic
 
+/static/js/
+/static/css/
