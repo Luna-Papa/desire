@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import ChannelInfo, ChkInfo, SyncTaskInfo, PushTaskInfo, ScriptConfig, SmsSenderInfo, Test001
+from .models import ChannelInfo, ChkInfo, SyncTaskInfo, PushTaskInfo, PushSysInfo, PushSysTabInfo, ScriptConfig, SmsSenderInfo, Test001
 from .forms import SyncTaskInfoAdminForm
 from import_export.admin import ImportExportModelAdmin
 
@@ -256,7 +256,7 @@ class PushTaskInfoAdmin(ImportExportModelAdmin):
         'code_page': admin.HORIZONTAL,
     }
     list_filter = ('chn_name',)
-    search_fields = ('chn_name', 'source_tab_name')
+    search_fields = ('chn_name', 'source_tab_name', 'push_tab_id')
 
     change_form_template = 'admin/extra/PushTaskInfo_change_form.html'
 
@@ -273,6 +273,14 @@ class PushTaskInfoAdmin(ImportExportModelAdmin):
         if obj.file_type == 'ixf':
             obj.separator = ''
             obj.delimiter = ''
+
+        # 生成推送表唯一标识
+        obj.push_tab_id = f'{obj.push_tab_name}_{obj.code_page}'
+        if obj.separator:
+            obj.push_tab_id += f'_{obj.separator}'
+        if obj.delimiter:
+            obj.push_tab_id += f'_{obj.delimiter}'
+        obj.push_tab_id += f'.{obj.file_type}'
 
         if not change:
             task_info = PushTaskInfo.objects.filter(chn_name=obj.chn_name)
@@ -338,6 +346,35 @@ class SmsSenderInfoAdmin(ImportExportModelAdmin):
     def save_model(self, request, obj, form, change):
         obj.sync_flag = False
         return super(SmsSenderInfoAdmin, self).save_model(request, obj, form, change)
+
+
+@admin.register(PushSysInfo)
+class PushSysInfoAdmin(ImportExportModelAdmin):
+    list_display = ('system_abbr', 'system_name', 'push_path', 'val_flag', 'sync_flag')
+    fields = ('system_abbr', 'system_name', 'push_path', 'val_flag')
+    search_fields = ('system_name', 'system_abbr')
+
+    def save_model(self, request, obj, form, change):
+        obj.system_abbr = obj.system_abbr.strip().upper()
+        # 处理路径，自动去除末尾的/
+        if obj.push_path.endswith('/'):
+            obj.push_path = obj.push_path[0:-1]
+        obj.sync_flag = False
+        return super(PushSysInfoAdmin, self).save_model(request, obj, form, change)
+
+
+@admin.register(PushSysTabInfo)
+class PushSysTabInfoAdmin(ImportExportModelAdmin):
+    list_display = ('system_name', 'tab_id', 'channel', 'val_flag', 'sync_flag')
+    fields = ('system_name', 'tab_id', 'val_flag')
+    autocomplete_fields = ['system_name', 'tab_id']
+
+    def save_model(self, request, obj, form, change):
+        # 生成推送表对应的源系统渠道号
+        obj.channel = obj.tab_id.chn_name.sys_name
+
+        obj.sync_flag = False
+        return super(PushSysTabInfoAdmin, self).save_model(request, obj, form, change)
 
 
 @admin.register(Test001)

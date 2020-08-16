@@ -162,7 +162,7 @@ class PushTaskInfo(models.Model):
                                  default='TMP', max_length=3)
     push_tab_name = models.CharField(verbose_name='推送表名', max_length=128)
     path = models.CharField(verbose_name='推送目录', max_length=128,
-                            validators=[RegexValidator("^\/(\w+)+$", message='请输入合法路径！')])
+                            validators=[RegexValidator("^\/(\w+\/?)+$", message='请输入合法路径！')])
     file_type = models.CharField(verbose_name='导出文件格式', max_length=3,
                                  choices=(('ixf', 'ixf'), ('txt', 'txt')))
     code_page = models.CharField(verbose_name='编码格式', max_length=10,
@@ -172,7 +172,7 @@ class PushTaskInfo(models.Model):
     delimiter = models.CharField(verbose_name='字段限定符', max_length=10, null=True, blank=True,
                                  help_text='不指定则默认为"')
     # 根据push_tab_name、file_type、code_page、separator、delimiter生成唯一标识
-    # tab_id = models.CharField(verbose_name='推送标识', max_length=120, unique=True)
+    push_tab_id = models.CharField(verbose_name='推送表标识', max_length=50, unique=True)
     val_flag = models.BooleanField(verbose_name='有效标识', default=True)
     sync_flag = models.BooleanField(verbose_name='同步标识', default=False)
     new_record_flag = models.BooleanField(verbose_name='是否为新记录', default=True)
@@ -181,7 +181,7 @@ class PushTaskInfo(models.Model):
     push_id = models.IntegerField(default=100000, verbose_name='数据推送编号')
 
     def __str__(self):
-        return self.push_tab_name
+        return self.push_tab_id
 
     def clean(self):
         if self.source_tab_name.chn_name != self.chn_name:
@@ -190,6 +190,45 @@ class PushTaskInfo(models.Model):
     class Meta:
         verbose_name = '数据推送'
         verbose_name_plural = verbose_name
+
+
+class PushSysInfo(models.Model):
+    """推送下游系统信息"""
+    system_abbr = models.CharField(verbose_name='系统简称', max_length=10, unique=True)
+    system_name = models.CharField(verbose_name='系统中文名称', max_length=50)
+    push_path = models.CharField(verbose_name='推送路径', max_length=50,
+                                 validators=[RegexValidator("^\/(\w+\/?)+$", message='请输入合法路径！')],
+                                 help_text='下游系统获取文件目录设置')
+    val_flag = models.BooleanField(verbose_name='有效标识', default=True)
+    sync_flag = models.BooleanField(verbose_name='同步标识', default=False)
+    created_time = models.DateTimeField(auto_now_add=True, verbose_name='创建时间')
+    updated_time = models.DateTimeField(auto_now=True, verbose_name='上次修改时间')
+
+    class Meta:
+        verbose_name = '下游系统信息'
+        verbose_name_plural = verbose_name
+
+    def __str__(self):
+        return self.system_name
+
+
+class PushSysTabInfo(models.Model):
+    """推送给下游系统表信息"""
+    system_name = models.ForeignKey(PushSysInfo, on_delete=models.DO_NOTHING, verbose_name='系统名称')
+    tab_id = models.ForeignKey(PushTaskInfo, to_field='push_tab_id', on_delete=models.DO_NOTHING,
+                               verbose_name='推送表标识')
+    channel = models.CharField(verbose_name='数据渠道', max_length=20)
+    val_flag = models.BooleanField(verbose_name='有效标识', default=True)
+    sync_flag = models.BooleanField(verbose_name='同步标识', default=False)
+    created_time = models.DateTimeField(auto_now_add=True, verbose_name='创建时间')
+    updated_time = models.DateTimeField(auto_now=True, verbose_name='上次修改时间')
+
+    class Meta:
+        verbose_name = '推送目标定义'
+        verbose_name_plural = verbose_name
+
+    def __str__(self):
+        return f'{self.system_name}_{self.tab_id}'
 
 
 class ScriptConfig(models.Model):

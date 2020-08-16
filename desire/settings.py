@@ -141,6 +141,7 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'static'),
 )
+
 # 设置媒体路由地址
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
@@ -192,32 +193,42 @@ SIMPLEUI_CONFIG = {
             'models': [
                 {
                     'name': '数据源',
-                    'icon': 'fa fa-database',
+                    'icon': 'el-icon-info',
                     'url': 'datacloud/channelinfo/'
                 },
                 {
                     'name': '检测条件',
-                    'icon': 'fa fa-check-circle',
+                    'icon': 'el-icon-circle-check',
                     'url': 'datacloud/chkinfo/'
                 },
                 {
                     'name': '数据同步',
-                    'icon': 'fas fa-fighter-jet',
+                    'icon': 'el-icon-download',
                     'url': 'datacloud/synctaskinfo/'
                 },
                 {
                     'name': '数据推送',
-                    'icon': 'fas fa-share',
+                    'icon': 'el-icon-s-promotion',
                     'url': 'datacloud/pushtaskinfo/'
                 },
                 {
+                    'name': '推送系统',
+                    'icon': 'el-icon-s-management',
+                    'url': 'datacloud/pushsysinfo/'
+                },
+                {
+                    'name': '推送目标',
+                    'icon': 'el-icon-paperclip',
+                    'url': 'datacloud/pushsystabinfo/'
+                },
+                {
                     'name': '任务分类',
-                    'icon': 'fa fa-cog',
+                    'icon': 'el-icon-setting',
                     'url': 'datacloud/scriptconfig/'
                 },
                 {
                     'name': '短信发送',
-                    'icon': 'fas fa-sms',
+                    'icon': 'el-icon-s-comment',
                     'url': 'datacloud/smssenderinfo/'
                 },
                 {
@@ -234,7 +245,7 @@ SIMPLEUI_CONFIG = {
             'models': [
                 {
                     'name': '用户',
-                    'icon': 'fa fa-user',
+                    'icon': 'el-icon-user-solid',
                     'url': 'auth/user/'
                 },
                 {
