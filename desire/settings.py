@@ -218,7 +218,7 @@ SIMPLEUI_CONFIG = {
                 },
                 {
                     'name': '推送目标',
-                    'icon': 'el-icon-paperclip',
+                    'icon': 'el-icon-link',
                     'url': 'datacloud/pushsystabinfo/'
                 },
                 {
@@ -230,6 +230,11 @@ SIMPLEUI_CONFIG = {
                     'name': '短信发送',
                     'icon': 'el-icon-s-comment',
                     'url': 'datacloud/smssenderinfo/'
+                },
+                {
+                    'name': '参数配置',
+                    'icon': 'el-icon-edit',
+                    'url': 'datacloud/configinfo/'
                 },
                 {
                     'name': '测试',

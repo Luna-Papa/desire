@@ -1,5 +1,6 @@
 from django.contrib import admin
-from .models import ChannelInfo, ChkInfo, SyncTaskInfo, PushTaskInfo, PushSysInfo, PushSysTabInfo, ScriptConfig, SmsSenderInfo, Test001
+from .models import ChannelInfo, ChkInfo, SyncTaskInfo, PushTaskInfo, PushSysInfo, \
+    PushSysTabInfo, ScriptConfig, SmsSenderInfo, ConfigInfo, Test001
 from .forms import SyncTaskInfoAdminForm
 from import_export.admin import ImportExportModelAdmin
 
@@ -8,6 +9,11 @@ from import_export.admin import ImportExportModelAdmin
 
 admin.site.site_header = '数据云管理后台'
 admin.site.site_title = '数据云'
+
+
+class PushSysTabInfoInline(admin.TabularInline):
+    model = PushSysTabInfo
+    fields = ('system_name', 'tab_id')
 
 
 @admin.register(ChannelInfo)
@@ -245,8 +251,7 @@ class SyncTaskInfoAdmin(ImportExportModelAdmin):
 @admin.register(PushTaskInfo)
 class PushTaskInfoAdmin(ImportExportModelAdmin):
 
-    list_display = ('chn_name', 'push_tab_name', 'file_type',
-                    'code_page', 'path', 'val_flag', 'sync_flag')
+    list_display = ('chn_name', 'push_tab_name', 'push_tab_id', 'path', 'val_flag', 'sync_flag')
     fields = ('chn_name', 'source_tab_name', 'push_type', 'path', 'file_type', 'code_page',
               'separator', 'delimiter', 'val_flag')
     autocomplete_fields = ['source_tab_name']
@@ -259,6 +264,8 @@ class PushTaskInfoAdmin(ImportExportModelAdmin):
     search_fields = ('chn_name', 'source_tab_name', 'push_tab_id')
 
     change_form_template = 'admin/extra/PushTaskInfo_change_form.html'
+    # 同一页面可编辑下游系统信息
+    inlines = [PushSysTabInfoInline, ]
 
     def save_model(self, request, obj, form, change):
         obj.sync_flag = False
@@ -306,7 +313,7 @@ class PushTaskInfoAdmin(ImportExportModelAdmin):
     def change_val_flag(self, request, queryset):
         queryset.update(val_flag=False)
 
-    change_val_flag.short_description = '置为无效'
+    change_val_flag.short_description = '删除'
     change_val_flag.icon = 'el-icon-close'
     change_val_flag.type = 'danger'
 
@@ -323,7 +330,7 @@ class PushTaskInfoAdmin(ImportExportModelAdmin):
 @admin.register(ScriptConfig)
 class ScriptConfigAdmin(ImportExportModelAdmin):
     list_display = ('type', 'type_name', 'script', 'parameter')
-    fields = ('type', 'type_name', 'script', 'parameter')
+    fields = ('type', 'type_name', 'script', 'parameter', 'remark')
 
     def get_actions(self, request):
         # 禁用列表页删除按钮
@@ -351,14 +358,24 @@ class SmsSenderInfoAdmin(ImportExportModelAdmin):
 @admin.register(PushSysInfo)
 class PushSysInfoAdmin(ImportExportModelAdmin):
     list_display = ('system_abbr', 'system_name', 'push_path', 'val_flag', 'sync_flag')
-    fields = ('system_abbr', 'system_name', 'push_path', 'val_flag')
+    fields = ('system_abbr', 'system_name', 'val_flag')
     search_fields = ('system_name', 'system_abbr')
 
     def save_model(self, request, obj, form, change):
         obj.system_abbr = obj.system_abbr.strip().upper()
+        # 根据系统简称自动生成对应推送路径
+        push_path = ConfigInfo.objects.get(item='push_path').value
         # 处理路径，自动去除末尾的/
-        if obj.push_path.endswith('/'):
-            obj.push_path = obj.push_path[0:-1]
+        if push_path.endswith('/'):
+            push_path = push_path[0:-1]
+        obj.push_path = f'{push_path}/{obj.system_abbr.lower()}'
+        # 生产推送标识作业编号 - 一个下游系统分配一个作业编号，以999980001开始
+        if not change:
+            push_sys_count = PushSysInfo.objects.count()
+            if push_sys_count:
+                obj.push_sys_id = 999980001 + push_sys_count
+            else:
+                obj.push_sys_id = 999980001
         obj.sync_flag = False
         return super(PushSysInfoAdmin, self).save_model(request, obj, form, change)
 
@@ -368,13 +385,23 @@ class PushSysTabInfoAdmin(ImportExportModelAdmin):
     list_display = ('system_name', 'tab_id', 'channel', 'val_flag', 'sync_flag')
     fields = ('system_name', 'tab_id', 'val_flag')
     autocomplete_fields = ['system_name', 'tab_id']
+    search_fields = ('system_name', 'tab_id')
 
     def save_model(self, request, obj, form, change):
         # 生成推送表对应的源系统渠道号
         obj.channel = obj.tab_id.chn_name.sys_name
-
         obj.sync_flag = False
+        # 新增记录时，新记录标识置为是
+        if not change:
+            obj.new_record_flag = True
+
         return super(PushSysTabInfoAdmin, self).save_model(request, obj, form, change)
+
+
+@admin.register(ConfigInfo)
+class ConfigInfoAdmin(ImportExportModelAdmin):
+    list_display = ('item', 'value', 'describe', 'val_flag')
+    fields = ('item', 'value', 'describe', 'val_flag')
 
 
 @admin.register(Test001)

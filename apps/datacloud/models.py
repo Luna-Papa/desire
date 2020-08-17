@@ -14,6 +14,14 @@ class DataSyncTypes(models.TextChoices):
     TYPE_D = 'T+3', 'T+3'
 
 
+class SyncTypes(models.IntegerChoices):
+    """同步状态定义"""
+    sync_complete = 1, '已同步'
+    sync_waiting = 0, '未同步'
+    sync_execute = 2, '开始同步'
+    sync_failed = 3, '同步失败'
+
+
 class ChannelInfo(models.Model):
     """
     数据源信息表
@@ -31,7 +39,8 @@ class ChannelInfo(models.Model):
                                       validators=[RegexValidator("(20|21|22|23|[0-1]\d):[0,3]0",
                                                                  message='请输入整点或整半点时间，如：01:00、01:30！')])
     val_flag = models.BooleanField(verbose_name='有效标识', default=True)
-    sync_flag = models.BooleanField(verbose_name='同步标识', default=False)
+    sync_flag = models.PositiveSmallIntegerField(verbose_name='同步标识',
+                                    default=SyncTypes.sync_waiting, choices=SyncTypes.choices)
     new_record_flag = models.BooleanField(verbose_name='是否为新记录', default=True)
     created_time = models.DateTimeField(auto_now_add=True, verbose_name='创建时间')
     updated_time = models.DateTimeField(auto_now=True, verbose_name='上次修改时间')
@@ -146,6 +155,7 @@ class SyncTaskInfo(models.Model):
     class Meta:
         verbose_name = '数据同步'
         verbose_name_plural = verbose_name
+        ordering = ['chn_name', 'chk_name', 'tab_name']
 
 
 class PushTaskInfo(models.Model):
@@ -203,6 +213,8 @@ class PushSysInfo(models.Model):
     sync_flag = models.BooleanField(verbose_name='同步标识', default=False)
     created_time = models.DateTimeField(auto_now_add=True, verbose_name='创建时间')
     updated_time = models.DateTimeField(auto_now=True, verbose_name='上次修改时间')
+    new_record_flag = models.BooleanField(verbose_name='是否为新记录', default=True)
+    push_sys_id = models.IntegerField(verbose_name='推送标识作业编号', default=999980000, unique=True)
 
     class Meta:
         verbose_name = '下游系统信息'
@@ -226,6 +238,7 @@ class PushSysTabInfo(models.Model):
     class Meta:
         verbose_name = '推送目标定义'
         verbose_name_plural = verbose_name
+        ordering = ['system_name', 'channel', 'tab_id']
 
     def __str__(self):
         return f'{self.system_name}_{self.tab_id}'
@@ -240,6 +253,7 @@ class ScriptConfig(models.Model):
     script = models.CharField(verbose_name='shell脚本配置', max_length=200, unique=True)
     parameter = models.CharField(verbose_name='脚本传入参数', max_length=200, null=True, blank=True,
                                  help_text='多个参数以空格分隔')
+    remark = models.CharField(verbose_name='备注', max_length=200, null=True, blank=True)
 
     def __str__(self):
         return self.type_name
@@ -259,7 +273,9 @@ class SmsSenderInfo(models.Model):
     val_flag = models.BooleanField(verbose_name='有效标识', default=True)
     created_time = models.DateTimeField(auto_now_add=True, verbose_name='创建时间')
     updated_time = models.DateTimeField(auto_now=True, verbose_name='上次修改时间')
-    sync_flag = models.BooleanField(verbose_name='同步标识', default=False)
+    # sync_flag = models.BooleanField(verbose_name='同步标识', default=False)
+    sync_flag = models.IntegerField(choices=SyncTypes.choices, verbose_name='同步标识',
+                                    default=SyncTypes.sync_waiting)
 
     def __str__(self):
         return self.name
@@ -267,6 +283,24 @@ class SmsSenderInfo(models.Model):
     class Meta:
         verbose_name = '短信发送'
         verbose_name_plural = verbose_name
+
+
+class ConfigInfo(models.Model):
+    """配置表"""
+    item = models.CharField(verbose_name='配置项', max_length=50)
+    value = models.CharField(verbose_name='配置值', max_length=128)
+    describe = models.CharField(verbose_name='配置说明', max_length=128)
+    val_flag = models.BooleanField(verbose_name='有效标识', default=True)
+    created_time = models.DateTimeField(auto_now_add=True, verbose_name='创建时间')
+    updated_time = models.DateTimeField(auto_now=True, verbose_name='上次修改时间')
+
+    class Meta:
+        verbose_name = '参数配置'
+        verbose_name_plural = verbose_name
+        ordering = ['item']
+
+    def __str__(self):
+        return self.item
 
 
 class Test001(models.Model):

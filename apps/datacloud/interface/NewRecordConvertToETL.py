@@ -7,7 +7,8 @@ from datacloud.interface.tools import get_db_conn, get_sql_stmt
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "desire.settings")
 application = get_wsgi_application()
 
-from datacloud.models import ChannelInfo, ChkInfo, SyncTaskInfo, PushTaskInfo, ScriptConfig
+from datacloud.models import ChannelInfo, ChkInfo, SyncTaskInfo, PushTaskInfo, \
+    ScriptConfig, PushSysInfo, PushSysTabInfo
 
 SHELL_HOME = '${user.home}/eDataMover/script/'
 
@@ -313,3 +314,47 @@ if __name__ == '__main__':
             # 执行完成后，将该条记录的新增记录标识为否
             push_task.new_record_flag = False
             push_task.save()
+
+    ##########################################
+    # 处理下游系统定义表
+    ##########################################
+
+    push_sys_info = PushSysInfo.objects.filter(new_record_flag=True)
+    if push_sys_info.exists():
+        for push_sys in push_sys_info:
+            # InitJob所需字段
+            ID = push_sys.push_sys_id
+            JOBTYPE = 1
+            JOBCNM = f'标识生成-{push_sys.system_name}'
+            JOBID = push_sys.push_id
+            JOBPRI = 1
+            STGID = 80000
+            CHAID = 990000
+            JOBCYC = 'D'
+            APPURL = SHELL_HOME + ScriptConfig.objects.get(type='80000').script
+            # 数据推送类任务参数为表名
+            PARAM = push_sys.system_abbr
+            JOBVAL = 1
+            JOBIGN = 0
+
+            # 拼接DB2 SQL语句
+            push_sys_sql1 = eval('f' + '"' + get_sql_stmt('INIT_JOB') + '"')
+            # 执行DB2 SQL语句
+            curr.execute(push_sys_sql1)
+
+            # SCTFLW所需字段
+            FLWJOB = push_sys.push_id
+
+            # 遍历该下游系统所需的全部推送表作业，生成依赖关系
+            push_sys_tab_info = PushSysTabInfo.objects.filter(system_name=push_sys.system_name)
+            for push_sys_tab in push_sys_tab_info:
+                # 找到tab_id对应的推送任务编号
+                FLWPRO = push_sys_tab.tab_id.push_id
+                # 依赖关系：数据推送 -> 下游系统标识生成
+                push_task_sql2 = eval('f' + '"' + get_sql_stmt('SCTFLW') + '"')
+                # 执行DB2 SQL语句
+                curr.execute(push_task_sql2)
+
+            # 执行完成后，将该条记录的新增记录标识为否
+            push_sys.new_record_flag = False
+            push_sys.save()
