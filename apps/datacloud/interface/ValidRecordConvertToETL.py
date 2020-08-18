@@ -1,6 +1,5 @@
 import os
 from django.core.wsgi import get_wsgi_application
-import ibm_db
 from datacloud.interface.tools import get_db_conn, get_sql_stmt
 from datetime import datetime
 
@@ -8,7 +7,7 @@ from datetime import datetime
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "desire.settings")
 application = get_wsgi_application()
 
-from datacloud.models import ChannelInfo, ChkInfo, SyncTaskInfo, PushTaskInfo, ScriptConfig
+from datacloud.models import ChannelInfo, ChkInfo, SyncTaskInfo, PushTaskInfo, PushSysTabInfo
 
 if __name__ == '__main__':
     """
@@ -95,4 +94,12 @@ if __name__ == '__main__':
             JOBID = push.push_id
             sql_stmt_sync_push = eval('f' + '"' + get_sql_stmt('SCTJOB') + '"')
             curr.execute(sql_stmt_sync_push)
-            # ibm_db.exec_immediate(cur_conn, sql_stmt_sync_push)
+
+            # 处理关联的系统推送表(PushSysTabInfo)定义，将其状态标识置为无效，并更新其最后修改时间为当前时点
+            tab_id = push.push_tab_id
+            related_push_sys_tab_info = PushSysTabInfo.objects.filter(tab_id=tab_id)
+            if related_push_sys_tab_info.exists():
+                for push_sys_tab in related_push_sys_tab_info:
+                    push_sys_tab.val_flag = False
+                    push_sys_tab.updated_time = datetime.now()
+                    push_sys_tab.save()

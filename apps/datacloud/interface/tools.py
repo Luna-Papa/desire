@@ -6,7 +6,7 @@ import ibm_db_dbi
 
 def get_db_conn(db):
     cf = configparser.ConfigParser()
-    cf.read(os.path.join(INTERFACE_DIR, 'dbconf.ini'))
+    cf.read(os.path.join(INTERFACE_DIR, 'conf', 'dbconf.ini'))
     # secs = cf.sections()
     host = cf.get(db, "host")
     database = cf.get(db, "db")
@@ -24,7 +24,7 @@ def get_db_conn(db):
 
 def get_sql_stmt(table):
     cf = configparser.ConfigParser()
-    cf.read(os.path.join(INTERFACE_DIR, 'etl_convert_sql.ini'))
+    cf.read(os.path.join(INTERFACE_DIR, 'conf', 'etl_convert_sql.ini'))
     # secs = cf.sections()
     stmt = cf.get(table, "SQL")
     return stmt

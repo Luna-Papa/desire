@@ -18,7 +18,7 @@ class SyncTypes(models.IntegerChoices):
     """同步状态定义"""
     sync_complete = 1, '已同步'
     sync_waiting = 0, '未同步'
-    sync_execute = 2, '开始同步'
+    sync_begin = 2, '开始同步'
     sync_failed = 3, '同步失败'
 
 
@@ -40,7 +40,7 @@ class ChannelInfo(models.Model):
                                                                  message='请输入整点或整半点时间，如：01:00、01:30！')])
     val_flag = models.BooleanField(verbose_name='有效标识', default=True)
     sync_flag = models.PositiveSmallIntegerField(verbose_name='同步标识',
-                                    default=SyncTypes.sync_waiting, choices=SyncTypes.choices)
+                                                 default=SyncTypes.sync_waiting, choices=SyncTypes.choices)
     new_record_flag = models.BooleanField(verbose_name='是否为新记录', default=True)
     created_time = models.DateTimeField(auto_now_add=True, verbose_name='创建时间')
     updated_time = models.DateTimeField(auto_now=True, verbose_name='上次修改时间')
@@ -71,7 +71,8 @@ class ChkInfo(models.Model):
                                  default=DataSyncTypes.TYPE_B)
     memo = models.CharField(verbose_name='备注', max_length=128, null=True, blank=True)
     val_flag = models.BooleanField(verbose_name='有效标识', default=True)
-    sync_flag = models.BooleanField(verbose_name='同步标识', default=False)
+    sync_flag = models.PositiveSmallIntegerField(verbose_name='同步标识',
+                                                 default=SyncTypes.sync_waiting, choices=SyncTypes.choices)
     new_record_flag = models.BooleanField(verbose_name='是否为新记录', default=True)
     created_time = models.DateTimeField(auto_now_add=True, verbose_name='创建时间')
     updated_time = models.DateTimeField(auto_now=True, verbose_name='上次修改时间')
@@ -142,7 +143,8 @@ class SyncTaskInfo(models.Model):
     val_flag = models.BooleanField(verbose_name='有效标识', default=True)
     backup_flag = models.BooleanField(verbose_name='备份标识', default=False,
                                       help_text='勾选后每日自动进行备份')
-    sync_flag = models.BooleanField(verbose_name='同步标识', default=False)
+    sync_flag = models.PositiveSmallIntegerField(verbose_name='同步标识',
+                                                 default=SyncTypes.sync_waiting, choices=SyncTypes.choices)
     new_record_flag = models.BooleanField(verbose_name='是否为新记录', default=True)
     created_time = models.DateTimeField(auto_now_add=True, verbose_name='创建时间')
     updated_time = models.DateTimeField(auto_now=True, verbose_name='上次修改时间')
@@ -184,7 +186,8 @@ class PushTaskInfo(models.Model):
     # 根据push_tab_name、file_type、code_page、separator、delimiter生成唯一标识
     push_tab_id = models.CharField(verbose_name='推送表标识', max_length=50, unique=True)
     val_flag = models.BooleanField(verbose_name='有效标识', default=True)
-    sync_flag = models.BooleanField(verbose_name='同步标识', default=False)
+    sync_flag = models.PositiveSmallIntegerField(verbose_name='同步标识',
+                                                 default=SyncTypes.sync_waiting, choices=SyncTypes.choices)
     new_record_flag = models.BooleanField(verbose_name='是否为新记录', default=True)
     created_time = models.DateTimeField(auto_now_add=True, verbose_name='创建时间')
     updated_time = models.DateTimeField(auto_now=True, verbose_name='上次修改时间')
@@ -200,6 +203,7 @@ class PushTaskInfo(models.Model):
     class Meta:
         verbose_name = '数据推送'
         verbose_name_plural = verbose_name
+        ordering = ['chn_name', 'push_tab_id']
 
 
 class PushSysInfo(models.Model):
@@ -210,7 +214,8 @@ class PushSysInfo(models.Model):
                                  validators=[RegexValidator("^\/(\w+\/?)+$", message='请输入合法路径！')],
                                  help_text='下游系统获取文件目录设置')
     val_flag = models.BooleanField(verbose_name='有效标识', default=True)
-    sync_flag = models.BooleanField(verbose_name='同步标识', default=False)
+    sync_flag = models.PositiveSmallIntegerField(verbose_name='同步标识',
+                                                 default=SyncTypes.sync_waiting, choices=SyncTypes.choices)
     created_time = models.DateTimeField(auto_now_add=True, verbose_name='创建时间')
     updated_time = models.DateTimeField(auto_now=True, verbose_name='上次修改时间')
     new_record_flag = models.BooleanField(verbose_name='是否为新记录', default=True)
@@ -219,6 +224,7 @@ class PushSysInfo(models.Model):
     class Meta:
         verbose_name = '下游系统信息'
         verbose_name_plural = verbose_name
+        ordering = ['system_name']
 
     def __str__(self):
         return self.system_name
@@ -227,11 +233,12 @@ class PushSysInfo(models.Model):
 class PushSysTabInfo(models.Model):
     """推送给下游系统表信息"""
     system_name = models.ForeignKey(PushSysInfo, on_delete=models.DO_NOTHING, verbose_name='系统名称')
-    tab_id = models.ForeignKey(PushTaskInfo, to_field='push_tab_id', on_delete=models.DO_NOTHING,
+    tab_id = models.ForeignKey(PushTaskInfo, on_delete=models.DO_NOTHING,
                                verbose_name='推送表标识')
     channel = models.CharField(verbose_name='数据渠道', max_length=20)
     val_flag = models.BooleanField(verbose_name='有效标识', default=True)
-    sync_flag = models.BooleanField(verbose_name='同步标识', default=False)
+    sync_flag = models.PositiveSmallIntegerField(verbose_name='同步标识',
+                                                 default=SyncTypes.sync_waiting, choices=SyncTypes.choices)
     created_time = models.DateTimeField(auto_now_add=True, verbose_name='创建时间')
     updated_time = models.DateTimeField(auto_now=True, verbose_name='上次修改时间')
 

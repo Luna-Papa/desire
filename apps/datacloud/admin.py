@@ -19,9 +19,9 @@ class PushSysTabInfoInline(admin.TabularInline):
 @admin.register(ChannelInfo)
 class ChannelInfoAdmin(ImportExportModelAdmin):
     list_display = ('sys_name', 'chn_name', 'db_name', 'address', 'chn_start_time',
-                    'created_time', 'sync_flag')
+                    'created_time', 'val_flag', 'sync_flag')
     fields = ('sys_name', 'chn_name', 'db_name', 'address', 'port', 'code_page',
-              'username', 'password', 'chn_start_time')
+              'username', 'password', 'chn_start_time', 'val_flag')
     search_fields = ['chn_name', 'db_name', 'sys_name']
     list_filter = ('val_flag',)
 
@@ -56,18 +56,18 @@ class ChannelInfoAdmin(ImportExportModelAdmin):
     def change_val_flag(self, request, queryset):
         queryset.update(val_flag=False)
 
-    change_val_flag.short_description = '置为无效'
+    change_val_flag.short_description = '删除'
     change_val_flag.icon = 'el-icon-close'
     change_val_flag.type = 'danger'
 
-    actions = ['change_val_flag']
+    actions = ['change_val_flag', 'db_catalog']
 
     def db_catalog(self, request, queryset):
         pass
 
     db_catalog.short_description = '数据源编目'
-    # db_catalog.icon = 'el-icon-close'
-    # db_catalog.type = 'danger'
+    db_catalog.icon = 'el-icon-s-flag'
+    db_catalog.type = 'warning'
 
 
 @admin.register(ChkInfo)
@@ -78,8 +78,17 @@ class ChkInfoAdmin(ImportExportModelAdmin):
     search_fields = ['chk_name']
     autocomplete_fields = ['chn_name']
 
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == 'chn_name':
+            kwargs['queryset'] = ChannelInfo.objects.filter(val_flag=True)
+        return super(ChkInfoAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
+
     def save_model(self, request, obj, form, change):
         obj.sync_flag = False
+        # 拼接检测名称，增加系统简称前缀。如：sop - 批处理断点1
+        system_abbr = obj.chn_name.sys_name
+        obj.chk_name = f'{system_abbr}-{obj.chk_name}'
+
         if not change:
             chk_info = ChkInfo.objects.filter(chn_name=obj.chn_name)
             if chk_info:
@@ -107,7 +116,7 @@ class ChkInfoAdmin(ImportExportModelAdmin):
     def change_val_flag(self, request, queryset):
         queryset.update(val_flag=False)
 
-    change_val_flag.short_description = '置为无效'
+    change_val_flag.short_description = '删除'
     change_val_flag.icon = 'el-icon-close'
     change_val_flag.type = 'danger'
 
@@ -130,12 +139,12 @@ class SyncTaskInfoAdmin(ImportExportModelAdmin):
         ('任务配置',
          {
              'fields':
-                 ['chk_name', 'tab_name', 'outfile_type', 'exp_method', 'date_type', 'load_method', 'zl_info']
+                 ['chk_name', 'tab_name', 'outfile_type', 'exp_method', 'date_type', ]
          }),
         ('任务条件',
          {
              'fields':
-                 ['out_path', 'zl_col', 'ftp_file']
+                 ['load_method', 'zl_info', 'zl_col', 'ftp_file']
          }),
         ('储存配置',
          {
@@ -148,6 +157,11 @@ class SyncTaskInfoAdmin(ImportExportModelAdmin):
     list_filter = ('chn_name', 'chk_name')
 
     change_form_template = 'admin/extra/SyncTaskInfo_change_form.html'
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == 'chk_name':
+            kwargs['queryset'] = ChkInfo.objects.filter(val_flag=True)
+        return super(SyncTaskInfoAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
     def save_model(self, request, obj, form, change):
 
@@ -182,9 +196,16 @@ class SyncTaskInfoAdmin(ImportExportModelAdmin):
             else:
                 obj.his_tab = ''
 
+        # 根据系统简称自动生成对应同步路径
+        system_abbr = obj.chn_name.sys_name
+        sync_path = ConfigInfo.objects.get(item='sync_path').value
         # 处理路径，自动去除末尾的/
-        if obj.out_path.endswith('/'):
-            obj.out_path = obj.out_path[0:-1]
+        if sync_path.endswith('/'):
+            sync_path = sync_path[0:-1]
+        obj.out_path = f'{sync_path}/{system_abbr.lower()}'
+        # # 处理路径，自动去除末尾的/
+        # if obj.sync_path.endswith('/'):
+        #     obj.sync_path = obj.sync_path[0:-1]
 
         # 当导出方式为ftp或cdc时，增量标识和增量检测字段置为空
         if obj.exp_method == 'ftp' or obj.exp_method == 'cdc':
@@ -234,7 +255,7 @@ class SyncTaskInfoAdmin(ImportExportModelAdmin):
     def change_val_flag(self, request, queryset):
         queryset.update(val_flag=False)
 
-    change_val_flag.short_description = '置为无效'
+    change_val_flag.short_description = '删除'
     change_val_flag.icon = 'el-icon-close'
     change_val_flag.type = 'danger'
 
@@ -242,10 +263,10 @@ class SyncTaskInfoAdmin(ImportExportModelAdmin):
         pass
 
     table_full_sync.short_description = '全量同步'
-    # db_catalog.icon = 'el-icon-close'
-    # db_catalog.type = 'danger'
+    table_full_sync.icon = 'el-icon-caret-bottom'
+    table_full_sync.type = 'warning'
 
-    actions = ['change_val_flag']
+    actions = ['change_val_flag', 'table_full_sync']
 
 
 @admin.register(PushTaskInfo)
@@ -261,11 +282,16 @@ class PushTaskInfoAdmin(ImportExportModelAdmin):
         'code_page': admin.HORIZONTAL,
     }
     list_filter = ('chn_name',)
-    search_fields = ('chn_name', 'source_tab_name', 'push_tab_id')
+    search_fields = ['chn_name', 'source_tab_name', 'push_tab_id']
 
     change_form_template = 'admin/extra/PushTaskInfo_change_form.html'
     # 同一页面可编辑下游系统信息
     inlines = [PushSysTabInfoInline, ]
+
+    # def formfield_for_foreignkey(self, db_field, request, **kwargs):
+    #     if db_field.name == 'source_tab_name':
+    #         kwargs['queryset'] = SyncTaskInfo.objects.filter(val_flag=True)
+    #     return super(PushTaskInfoAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
     def save_model(self, request, obj, form, change):
         obj.sync_flag = False
@@ -321,10 +347,10 @@ class PushTaskInfoAdmin(ImportExportModelAdmin):
         pass
 
     table_full_push.short_description = '全量推送'
-    # db_catalog.icon = 'el-icon-close'
-    # db_catalog.type = 'danger'
+    table_full_push.icon = 'el-icon-s-unfold'
+    table_full_push.type = 'warning'
 
-    actions = ['change_val_flag']
+    actions = ['change_val_flag', 'table_full_push']
 
 
 @admin.register(ScriptConfig)
@@ -359,7 +385,7 @@ class SmsSenderInfoAdmin(ImportExportModelAdmin):
 class PushSysInfoAdmin(ImportExportModelAdmin):
     list_display = ('system_abbr', 'system_name', 'push_path', 'val_flag', 'sync_flag')
     fields = ('system_abbr', 'system_name', 'val_flag')
-    search_fields = ('system_name', 'system_abbr')
+    search_fields = ['system_name', 'system_abbr']
 
     def save_model(self, request, obj, form, change):
         obj.system_abbr = obj.system_abbr.strip().upper()
@@ -385,7 +411,12 @@ class PushSysTabInfoAdmin(ImportExportModelAdmin):
     list_display = ('system_name', 'tab_id', 'channel', 'val_flag', 'sync_flag')
     fields = ('system_name', 'tab_id', 'val_flag')
     autocomplete_fields = ['system_name', 'tab_id']
-    search_fields = ('system_name', 'tab_id')
+    search_fields = ['system_name', 'tab_id']
+
+    # def formfield_for_foreignkey(self, db_field, request, **kwargs):
+    #     if db_field.name == 'tab_id':
+    #         kwargs['queryset'] = PushTaskInfo.objects.filter(val_flag=True)
+    #     return super(PushSysTabInfoAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
     def save_model(self, request, obj, form, change):
         # 生成推送表对应的源系统渠道号
